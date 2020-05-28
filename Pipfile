@@ -4,6 +4,12 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+django-debug-toolbar = "*"
+autopep8 = "*"
+werkzeug = "*"
+peewee = "*"
+pylint = "*"
+pymysql = "*"
 
 [packages]
 django = "*"
