@@ -6,7 +6,7 @@ import sys
 
 def main():
     settings_path = 'contactosapi.settings.production'
-    if os.uname()[1] == 'pc02':
+    if os.uname()[1] in ('pc02', 'laptop'):
         settings_path = 'contactosapi.settings.devel'
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings_path)
     try:

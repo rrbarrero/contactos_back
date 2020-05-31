@@ -1,6 +1,11 @@
 from django.contrib import admin
 from .models import *
 
+class ProvinciaAdmin(admin.ModelAdmin):
+    pass
+
+class PaisAdmin(admin.ModelAdmin):
+    pass
 
 class ColectivoAdmin(admin.ModelAdmin):
     pass
@@ -14,7 +19,8 @@ class PersonaAdmin(admin.ModelAdmin):
 class CargoAdmin(admin.ModelAdmin):
     pass
 
-
+admin.site.register(Provincia, ProvinciaAdmin)
+admin.site.register(Pais, PaisAdmin)
 admin.site.register(Colectivo, ColectivoAdmin)
 admin.site.register(SubColectivo, SubColectivoAdmin)
 admin.site.register(Persona, PersonaAdmin)

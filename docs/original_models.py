@@ -56,6 +56,9 @@ class Persona(BaseModel):
 class Provincia(BaseModel):
     nombre = CharField(null=True, unique=True)
 
+    def __str__(self):
+        return "<Procincia ID: {} Nombre: {}>".format(self.id, self.nombre)
+
     class Meta:
         table_name = 'provincia'
 

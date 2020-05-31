@@ -28,7 +28,7 @@ class Pais(models.Model):
     nombre = models.CharField(max_length=500, verbose_name='Nombre')
 
     class Meta:
-        db_table = 'países'
+        db_table = 'paises'
         verbose_name_plural = 'Paises'
 
     def __str__(self):
@@ -73,10 +73,13 @@ class Persona(models.Model):
 
 class Cargo(models.Model):
     cargo = models.CharField(max_length=500, verbose_name='Cargo')
+    persona = models.ForeignKey(Persona, verbose_name='Persona', on_delete=models.CASCADE)
     finalizado = models.BooleanField()
     ciudad = models.CharField(max_length=500, verbose_name='Ciudad')
     cod_postal = models.CharField(max_length=5, verbose_name='Código Postal')
     direccion = models.CharField(max_length=500, verbose_name='Dirección')
+    provincia = models.ForeignKey(Provincia, verbose_name ='Provincia', on_delete=models.PROTECT)
+    pais = models.ForeignKey(Pais, verbose_name="Pais", on_delete=models.PROTECT)
     empresa = models.CharField(max_length=500, verbose_name='Empresa')
     fecha_cese = models.DateField(blank=True, verbose_name='Fecha finalización del cargo')
     fecha_alta = models.DateTimeField(auto_now_add=True)
