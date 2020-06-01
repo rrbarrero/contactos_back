@@ -1,6 +1,9 @@
 from django.contrib import admin
 from .models import *
 
+class TratamientoAdmin(admin.ModelAdmin):
+    pass
+
 class ProvinciaAdmin(admin.ModelAdmin):
     pass
 
@@ -14,11 +17,14 @@ class SubColectivoAdmin(admin.ModelAdmin):
     pass
 
 class PersonaAdmin(admin.ModelAdmin):
-    pass
+
+    search_fields = ['nombre', 'apellidos']
+
 
 class CargoAdmin(admin.ModelAdmin):
     pass
 
+admin.site.register(Tratamiento, TratamientoAdmin)
 admin.site.register(Provincia, ProvinciaAdmin)
 admin.site.register(Pais, PaisAdmin)
 admin.site.register(Colectivo, ColectivoAdmin)
