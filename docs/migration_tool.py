@@ -23,10 +23,20 @@ django.setup()
 from django.db import connection
 from agenda.models import *
 
+def reset_tables():
+    print("Vaciando tablas...")
+    Telefono.objects.all().delete()
+    Cargo.objects.all().delete()
+    SubColectivo.objects.all().delete()
+    Colectivo.objects.all().delete()
+    Persona.objects.all().delete()
+    Pais.objects.all().delete()
+    Provincia.objects.all().delete()
+    Tratamiento.objects.all().delete()
 
 
 def tratamientos():
-    Tratamiento.objects.all().delete()
+    print("Importando tratamientos...")
     for t in PwTratamiento.select():
         if t.nombre:
             if t.nombre.strip():
@@ -37,7 +47,7 @@ def tratamientos():
 
 
 def provincias():
-    Provincia.objects.all().delete()
+    print("Importando provincias...")
     for provincia in PwProvincia.select():
         p = Provincia()
         p.nombre = provincia.nombre
@@ -46,7 +56,7 @@ def provincias():
 
 
 def paises():
-    Pais.objects.all().delete()
+    print("Importando paises...")
     for p in PwPais.select():
         pais = Pais()
         pais.nombre = p.nombre
@@ -54,7 +64,7 @@ def paises():
         print(p.nombre)        
 
 def personas():
-    Persona.objects.all().delete()
+    print("Importando personas...")
     for p in PwPersona.select():
         persona = Persona()
         try:
@@ -81,7 +91,7 @@ def personas():
 
 
 def colectivos():
-    Colectivo.objects.all().delete()
+    print("Importando colectivos...")
     for c in PwColectivo.select():
         if c.nombre and c.nombre.strip():
             colectivo = Colectivo()
@@ -91,7 +101,7 @@ def colectivos():
 
 
 def subcolectivos():
-    SubColectivo.objects.all().delete()
+    print("Importando subtratamientos...")
     for c in PwSubColectivo.select():
         if c.nombre and c.nombre.strip() and c.nombre!='Sin subcolectivo':
             subcolectivo = SubColectivo()
@@ -101,7 +111,7 @@ def subcolectivos():
             print(subcolectivo)
 
 def cargos():
-    Cargo.objects.all().delete()
+    print("Importando cargos...")
     for c in PwCargo.select():
         cargo = Cargo()
         try:
@@ -153,7 +163,7 @@ def cargos():
 
 
 def telefonos():
-    Telefono.objects.all().delete()
+    print("Importando teléfonos...")
     for t in PwAgenda.select().where(PwAgenda.tipo.in_([1,2,6])):
         nombre = t.id_cargo.id_persona.nombre.strip()
         apellidos = t.id_cargo.id_persona.apellidos.strip()
@@ -187,11 +197,12 @@ def telefonos():
     
 
 if __name__ == '__main__':
-    # tratamientos()
-    # provincias()
-    # paises()
-    # personas()
-    # colectivos()
-    # subcolectivos()
-    # cargos()
+    reset_tables()
+    tratamientos()
+    provincias()
+    paises()
+    personas()
+    colectivos()
+    subcolectivos()
+    cargos()
     telefonos()
