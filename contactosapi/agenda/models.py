@@ -104,3 +104,43 @@ class Cargo(models.Model):
             empresa=self.empresa,
             tratamiento=self.persona.tratamiento,
         )
+
+
+class Telefono(models.Model):
+    cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE)
+    nombre = models.CharField(max_length=255, verbose_name='Nombre')
+    numero = models.CharField(max_length=255, verbose_name='Número de telf.')
+    nota = models.CharField(max_length=255, verbose_name='Nota', null=True)
+
+    class Meta:
+        db_table = 'telefonos'
+        verbose_name_plural = 'Teléfonos'
+
+    def __str__(self):
+        return "{telf} {contacto}, {cargo} ".format(
+            contacto = self.cargo.persona.nombre + " " + self.cargo.persona.apellidos,
+            cargo = self.cargo.cargo,
+            telf = self.numero,
+        )
+
+class Correo(models.Model):
+    cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE)
+    nombre = models.CharField(max_length=255, verbose_name='Nombre')
+    email = models.EmailField(verbose_name='E-mail')
+    nota = models.CharField(max_length=255, verbose_name='Nota', null=True)
+
+    class Meta:
+        db_table = 'correos'
+        verbose_name_plural = 'Correos'
+
+class OtroContacto(models.Model):
+    cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE)
+    nombre = models.CharField(max_length=255, verbose_name='Nombre')
+    dato = models.CharField(max_length=255, verbose_name='Dato de contacto')
+    nota = models.CharField(max_length=255, verbose_name='Nota', null=True)
+
+    class Meta:
+        db_table = 'otros_contactos'
+        verbose_name = 'Otro contacto'
+        verbose_name_plural = 'Otros contactos'
+

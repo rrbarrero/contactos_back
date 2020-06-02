@@ -7,6 +7,7 @@ from original_models import Persona as PwPersona
 from original_models import Cargo as PwCargo
 from original_models import Colectivo as PwColectivo
 from original_models import Subcolectivo as PwSubColectivo
+from original_models import Agenda as PwAgenda
 import os
 import logging
 import logging.config
@@ -151,11 +152,46 @@ def cargos():
         cargo.save()
 
 
+def telefonos():
+    Telefono.objects.all().delete()
+    for t in PwAgenda.select().where(PwAgenda.tipo.in_([1,2,6])):
+        nombre = t.id_cargo.id_persona.nombre.strip()
+        apellidos = t.id_cargo.id_persona.apellidos.strip()
+        if nombre and apellidos:
+            try:
+                persona = Persona.objects.get(
+                    nombre=nombre,
+                    apellidos=apellidos,
+                )
+            except django.core.exceptions.ObjectDoesNotExist:
+                print(persona, apellidos)
+                sys.exit()
+            try:
+                cargo = Cargo.objects.get(
+                    cargo=t.id_cargo.cargo,
+                    persona=persona,
+                )
+            except django.core.exceptions.ObjectDoesNotExist:
+                logger.error("Cargo no encontrado. <cargo: {} persona: {}>".format(
+                    t.id_cargo.cargo,
+                    persona
+                ))
+                continue
+            telf = Telefono()
+            telf.cargo = cargo
+            telf.nombre = t.nombre
+            telf.numero = t.dato
+            telf.nota = t.info
+            telf.save()
+
+    
+
 if __name__ == '__main__':
-    tratamientos()
-    provincias()
-    paises()
-    personas()
-    colectivos()
-    subcolectivos()
-    cargos()
+    # tratamientos()
+    # provincias()
+    # paises()
+    # personas()
+    # colectivos()
+    # subcolectivos()
+    # cargos()
+    telefonos()

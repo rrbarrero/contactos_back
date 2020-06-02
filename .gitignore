@@ -1,3 +1,4 @@
 *.sql
 *.log
 __pycache__
+contactos_migration.log.?

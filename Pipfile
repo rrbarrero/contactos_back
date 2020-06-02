@@ -20,6 +20,7 @@ mysqlclient = "*"
 openpyxl = "*"
 django-auth-ldap = "*"
 reportlab = "*"
+peewee = "*"
 
 [requires]
 python_version = "3.8"
