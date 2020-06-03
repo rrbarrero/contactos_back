@@ -76,7 +76,7 @@ class Persona(models.Model):
 
 class Cargo(models.Model):
     cargo = models.CharField(max_length=500, verbose_name='Cargo')
-    persona = models.ForeignKey(Persona, verbose_name='Persona', on_delete=models.CASCADE)
+    persona = models.ForeignKey(Persona, verbose_name='Persona', on_delete=models.CASCADE, related_name='cargos')
     finalizado = models.BooleanField()
     ciudad = models.CharField(max_length=500, verbose_name='Ciudad')
     cod_postal = models.CharField(max_length=5, verbose_name='Código Postal')
@@ -97,7 +97,7 @@ class Cargo(models.Model):
         verbose_name_plural = 'Cargos'
 
     def __str__(self):
-        return "{tratamiento} {apellidos}, {nombre} <{cargo} en {empresa}>".format(
+        return "{tratamiento} {apellidos}, {nombre} <{cargo}, {empresa}>".format(
             nombre=self.persona.nombre, 
             apellidos=self.persona.apellidos, 
             cargo=self.cargo,
@@ -107,7 +107,7 @@ class Cargo(models.Model):
 
 
 class Telefono(models.Model):
-    cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE)
+    cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE, related_name='telefonos')
     nombre = models.CharField(max_length=255, verbose_name='Nombre')
     numero = models.CharField(max_length=255, verbose_name='Número de telf.')
     nota = models.CharField(max_length=255, verbose_name='Nota', null=True)
@@ -124,7 +124,7 @@ class Telefono(models.Model):
         )
 
 class Correo(models.Model):
-    cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE)
+    cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE, related_name='correos')
     nombre = models.CharField(max_length=255, verbose_name='Nombre')
     email = models.EmailField(verbose_name='E-mail')
     nota = models.CharField(max_length=255, verbose_name='Nota', null=True)
@@ -132,6 +132,13 @@ class Correo(models.Model):
     class Meta:
         db_table = 'correos'
         verbose_name_plural = 'Correos'
+
+    def __str__(self):
+        return "{correo} <{contacto}, {cargo}> ".format(
+            contacto = self.cargo.persona.nombre + " " + self.cargo.persona.apellidos,
+            cargo = self.cargo.cargo,
+            correo = self.email,
+        )
 
 class OtroContacto(models.Model):
     cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE)

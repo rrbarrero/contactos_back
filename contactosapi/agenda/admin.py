@@ -28,6 +28,10 @@ class CargoAdmin(admin.ModelAdmin):
 
 
 class TelefonoAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'cargo', 'numero')
+    search_fields = ['nombre', 'cargo__empresa', 'cargo__persona__nombre', 'cargo__persona__apellidos', 'cargo__cargo']
+
+class CorreoAdmin(admin.ModelAdmin):
     pass
 
 admin.site.register(Tratamiento, TratamientoAdmin)
@@ -38,3 +42,4 @@ admin.site.register(SubColectivo, SubColectivoAdmin)
 admin.site.register(Persona, PersonaAdmin)
 admin.site.register(Cargo, CargoAdmin)
 admin.site.register(Telefono, TelefonoAdmin)
+admin.site.register(Correo, CorreoAdmin)

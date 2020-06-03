@@ -33,6 +33,7 @@ def reset_tables():
     Pais.objects.all().delete()
     Provincia.objects.all().delete()
     Tratamiento.objects.all().delete()
+    Correo.objects.all().delete()
 
 
 def tratamientos():
@@ -65,6 +66,7 @@ def paises():
 
 def personas():
     print("Importando personas...")
+    personas_counter = 0
     for p in PwPersona.select():
         persona = Persona()
         try:
@@ -86,8 +88,11 @@ def personas():
             persona.apellidos = None
         try:
             persona.save()
+            personas_counter += 1
         except django.db.utils.IntegrityError:
-            logger.warning("Duplicada. Persona: <id: {} Nombre: {} Apellidos: {}".format(p.id, p.nombre, p.apellidos))
+            ## logger.warning("Duplicada. Persona: <id: {} Nombre: {} Apellidos: {}".format(p.id, p.nombre, p.apellidos))
+            continue
+    logger.info("PERSONAS IMPORTADAS {}.".format(personas_counter))
 
 
 def colectivos():
@@ -112,6 +117,7 @@ def subcolectivos():
 
 def cargos():
     print("Importando cargos...")
+    cargos_counter = 0
     for c in PwCargo.select():
         cargo = Cargo()
         try:
@@ -149,52 +155,104 @@ def cargos():
         try:
             cargo.colectivo = Colectivo.objects.get(nombre=c.id_colectivo.nombre)
         except:
-            print(c.id_colectivo.nombre)
-            sys.exit()
+            logger.error("Colectivo no encontrado: {}".format(c.id_colectivo.nombre))
+            continue
         try:
             cargo.subcolectivo = SubColectivo.objects.get(nombre=c.id_subcolectivo.nombre, colectivo=cargo.colectivo)
         except django.core.exceptions.ObjectDoesNotExist:
             logger.error("Subcolectivo NO ENCONTRADO: nombre: {} colectivo {}".format(c.id_subcolectivo.nombre, cargo.colectivo))
-            print("Subcolectivo NO ENCONTRADO: nombre: {} colectivo {}".format(c.id_subcolectivo.nombre, cargo.colectivo))
-            sys.exit()
+            continue
         cargo.usuario_modificacion = User.objects.first()
         cargo.notas = c.notas 
         cargo.save()
-
+        cargos_counter += 1
+    logger.info("CARGOS IMPORTADOS {}.".format(cargos_counter))
 
 def telefonos():
     print("Importando teléfonos...")
+    telefonos_counter = 0
     for t in PwAgenda.select().where(PwAgenda.tipo.in_([1,2,6])):
-        nombre = t.id_cargo.id_persona.nombre.strip()
-        apellidos = t.id_cargo.id_persona.apellidos.strip()
-        if nombre and apellidos:
-            try:
-                persona = Persona.objects.get(
-                    nombre=nombre,
-                    apellidos=apellidos,
-                )
-            except django.core.exceptions.ObjectDoesNotExist:
-                print(persona, apellidos)
-                sys.exit()
-            try:
-                cargo = Cargo.objects.get(
-                    cargo=t.id_cargo.cargo,
-                    persona=persona,
-                )
-            except django.core.exceptions.ObjectDoesNotExist:
-                logger.error("Cargo no encontrado. <cargo: {} persona: {}>".format(
-                    t.id_cargo.cargo,
-                    persona
-                ))
-                continue
-            telf = Telefono()
-            telf.cargo = cargo
-            telf.nombre = t.nombre
-            telf.numero = t.dato
-            telf.nota = t.info
-            telf.save()
+        nombre = t.id_cargo.id_persona.nombre
+        apellidos = t.id_cargo.id_persona.apellidos
+        if nombre:
+            nombre = nombre.strip()
+        if apellidos:
+            apellidos = apellidos.strip()
+        try:
+            persona = Persona.objects.get(
+                nombre=nombre,
+                apellidos=apellidos,
+            )
+        except django.core.exceptions.ObjectDoesNotExist:
+            logger.error("Cargo cuya persona no encontrada: nombre<{}> apellidos<{}>".format(nombre, apellidos))
+            continue
+        cargos = Cargo.objects.filter(
+            cargo = t.id_cargo.cargo.strip(),
+            empresa = t.id_cargo.empresa.strip(),
+            persona = persona,
+        )
+        if len(cargos) == 0:
+            logger.error("Cargo no encontrado. cargo: <{}> empresa: <{}> nombre: <{}>".format(
+                t.id_cargo.cargo.strip(),
+                t.id_cargo.empresa.strip(),
+                persona,
+            ))
+            continue
+        else:
+            for cargo in cargos:
+                telf = Telefono()
+                telf.cargo = cargo
+                telf.nombre = t.nombre if t.nombre else 'Sin especificar'
+                telf.numero = t.dato
+                telf.nota = t.info
+                telf.save()
+                telefonos_counter += 1
+    print(telefonos_counter)
 
-    
+
+def correos():
+    print("Importando correos...")
+    correos_counter = 0
+    for t in PwAgenda.select().where(PwAgenda.tipo.in_([3,])):
+        nombre = t.id_cargo.id_persona.nombre
+        apellidos = t.id_cargo.id_persona.apellidos
+        if nombre:
+            nombre = nombre.strip()
+        if apellidos:
+            apellidos = apellidos.strip()
+        try:
+            persona = Persona.objects.get(
+                nombre=nombre,
+                apellidos=apellidos,
+            )
+        except django.core.exceptions.ObjectDoesNotExist:
+            logger.error("Cargo cuya persona no encontrada: nombre<{}> apellidos<{}>".format(nombre, apellidos))
+            continue
+        cargos = Cargo.objects.filter(
+            cargo = t.id_cargo.cargo.strip(),
+            empresa = t.id_cargo.empresa.strip(),
+            persona = persona,
+        )
+        if len(cargos) == 0:
+            logger.error("Cargo no encontrado. cargo: <{}> empresa: <{}> nombre: <{}>".format(
+                t.id_cargo.cargo.strip(),
+                t.id_cargo.empresa.strip(),
+                persona,
+            ))
+            continue
+        else:
+            for cargo in cargos:
+                email = Correo()
+                email.cargo = cargo
+                email.nombre = t.nombre if t.nombre else 'Sin especificar'
+                email.email = t.dato
+                email.nota = t.info
+                email.save()
+                correos_counter += 1
+    print(correos_counter)
+
+
+
 
 if __name__ == '__main__':
     reset_tables()
@@ -206,3 +264,4 @@ if __name__ == '__main__':
     subcolectivos()
     cargos()
     telefonos()
+    correos()
