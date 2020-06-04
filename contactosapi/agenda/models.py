@@ -15,7 +15,7 @@ class Colectivo(models.Model):
 
 class SubColectivo(models.Model):
     nombre = models.CharField(max_length=255, verbose_name='Nombre')
-    colectivo = models.ForeignKey(Colectivo, on_delete=models.CASCADE)
+    colectivo = models.ForeignKey(Colectivo, on_delete=models.CASCADE, related_name='subcolectivos')
 
     class Meta:
         db_table = 'subcolectivos'

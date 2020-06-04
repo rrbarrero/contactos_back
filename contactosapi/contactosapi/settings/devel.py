@@ -19,3 +19,7 @@ INTERNAL_IPS = ("127.0.0.1",)
 
 MIDDLEWARE += \
     ("debug_toolbar.middleware.DebugToolbarMiddleware", )
+
+CORS_ORIGIN_WHITELIST = [
+    # "http://localhost:8000", "https://rbarrero.duckdns.org:442",
+]

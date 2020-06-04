@@ -21,6 +21,8 @@ openpyxl = "*"
 django-auth-ldap = "*"
 reportlab = "*"
 peewee = "*"
+pygments = "*"
+django-cors-headers = "*"
 
 [requires]
 python_version = "3.8"
