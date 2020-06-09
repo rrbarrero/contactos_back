@@ -6,3 +6,5 @@
 
 ## Anotaciones:
 *  select nombre, apellidos, count(*) c from persona group by nombre, apellidos having c > 1;
+*  https://riptutorial.com/Download/django-rest-framework-es.pdf
+*  

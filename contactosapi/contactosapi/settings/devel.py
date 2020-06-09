@@ -21,5 +21,5 @@ MIDDLEWARE += \
     ("debug_toolbar.middleware.DebugToolbarMiddleware", )
 
 CORS_ORIGIN_WHITELIST = [
-    # "http://localhost:8000", "https://rbarrero.duckdns.org:442",
+    "http://localhost:8000", # "https://rbarrero.duckdns.org:442",
 ]
