@@ -73,7 +73,7 @@ class CargoSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Cargo
-        fields = ['cargo', 'persona', 'finalizado', 'ciudad', 'cod_postal', 'direccion',
+        fields = ['id', 'cargo', 'persona', 'finalizado', 'ciudad', 'cod_postal', 'direccion',
              'provincia', 'pais', 'empresa', 'fecha_cese', 'fecha_alta', 'fecha_modificacion',
              'colectivo', 'subcolectivo', 'usuario_modificacion', 'notas', 'telefonos',
              'correos']
