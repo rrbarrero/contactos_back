@@ -9,6 +9,7 @@ class Colectivo(models.Model):
     class Meta:
         db_table = 'colectivos'
         verbose_name_plural = 'Colectivos'
+        ordering = ['id']
 
     def __str__(self):
         return "{}".format(self.nombre)
@@ -21,6 +22,7 @@ class SubColectivo(models.Model):
         db_table = 'subcolectivos'
         verbose_name_plural = 'SubColectivos'
         unique_together = ('nombre', 'colectivo')
+        ordering = ['id']
 
     def __str__(self):
         return "{}".format(self.nombre)
@@ -32,6 +34,7 @@ class Pais(models.Model):
     class Meta:
         db_table = 'paises'
         verbose_name_plural = 'Paises'
+        ordering = ['nombre']
 
     def __str__(self):
         return "{}".format(self.nombre)
@@ -43,6 +46,7 @@ class Tratamiento(models.Model):
     class Meta:
         db_table = 'tratamientos'
         verbose_name_plural = 'Tratamientos'
+        ordering = ['nombre']
 
     def __str__(self):
         return "{}".format(self.nombre)
@@ -54,6 +58,7 @@ class Provincia(models.Model):
     class Meta:
         db_table = 'provincias'
         verbose_name_plural = 'Provincias'
+        ordering = ['nombre']
 
     def __str__(self):
         return "{}".format(self.nombre)
@@ -68,6 +73,7 @@ class Persona(models.Model):
         db_table = 'personas'
         verbose_name_plural = 'Personas'
         unique_together = ('nombre', 'apellidos')
+        ordering = ['apellidos', 'nombre']
 
     def __str__(self):
         return "{apellidos}, {nombre}".format(nombre=self.nombre, apellidos=self.apellidos)
@@ -95,6 +101,7 @@ class Cargo(models.Model):
     class Meta:
         db_table = 'cargos'
         verbose_name_plural = 'Cargos'
+        ordering = ['-fecha_alta']
 
     def __str__(self):
         return "{tratamiento} {apellidos}, {nombre} <{cargo}, {empresa}>".format(
@@ -115,6 +122,7 @@ class Telefono(models.Model):
     class Meta:
         db_table = 'telefonos'
         verbose_name_plural = 'Teléfonos'
+        ordering = ['nombre']
 
     def __str__(self):
         return "{telf} {contacto}, {cargo} ".format(
@@ -132,6 +140,7 @@ class Correo(models.Model):
     class Meta:
         db_table = 'correos'
         verbose_name_plural = 'Correos'
+        ordering = ['nombre']
 
     def __str__(self):
         return "{correo} <{contacto}, {cargo}> ".format(
@@ -150,4 +159,5 @@ class OtroContacto(models.Model):
         db_table = 'otros_contactos'
         verbose_name = 'Otro contacto'
         verbose_name_plural = 'Otros contactos'
+        ordering = ['nombre']
 
