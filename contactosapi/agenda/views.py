@@ -1,3 +1,4 @@
+from rest_framework import filters
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework.views import APIView
@@ -85,8 +86,16 @@ class PersonaDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class CargoList(generics.ListCreateAPIView):
-    queryset = Cargo.objects.all()
     serializer_class = CargoSerializer
+
+    def get_queryset(self):
+        queryset = Cargo.objects.all()
+        colectivos = self.request.query_params.get('colectivos', None)
+        if colectivos is not None and colectivos.strip():
+            print(colectivos)
+            queryset = queryset.filter(colectivo__in=colectivos.split(','))
+        return queryset
+    
 
 
 class CargoDetail(generics.RetrieveUpdateDestroyAPIView):

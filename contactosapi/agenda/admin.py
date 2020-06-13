@@ -23,7 +23,7 @@ class PersonaAdmin(admin.ModelAdmin):
 
 class CargoAdmin(admin.ModelAdmin):
 
-    list_display = ('persona', 'cargo', 'empresa')
+    list_display = ('persona', 'cargo', 'empresa', 'finalizado')
     search_fields = ['cargo', 'empresa', 'persona__nombre', 'persona__apellidos']
 
 

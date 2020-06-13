@@ -15,11 +15,11 @@ from rest_framework import serializers
 
 class ColectivoSerializer(serializers.HyperlinkedModelSerializer):
 
-    subcolectivos = serializers.StringRelatedField(many=True)
+    subcolectivos = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Colectivo
-        fields = ['nombre', 'subcolectivos']
+        fields = ['id', 'nombre', 'subcolectivos']
 
     
 class SubColectivoSerializer(serializers.ModelSerializer):
