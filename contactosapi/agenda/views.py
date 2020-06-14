@@ -1,9 +1,12 @@
+from itertools import chain
+
 from rest_framework import filters
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework.views import APIView
 
 from django.http import Http404
+from django.db.models import Q
 
 from agenda.models import Colectivo
 from agenda.models import SubColectivo
@@ -90,12 +93,36 @@ class CargoList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         queryset = Cargo.objects.all()
+        searchStr = self.request.query_params.get('searchStr', None)
         colectivos = self.request.query_params.get('colectivos', None)
-        if colectivos is not None and colectivos.strip():
-            print(colectivos)
+        if searchStr is not None:
+            # querysetCargos = self._search_cargos(searchStr)
+            querysetCargos = []
+            querysetPersonas = self._search_persona(searchStr)
+            queryset = list(chain(querysetPersonas, querysetCargos))
+        elif colectivos is not None and colectivos.strip():
             queryset = queryset.filter(colectivo__in=colectivos.split(','))
         return queryset
     
+    def _search_cargos(self, searchStr):
+        query =Q()
+        for word in searchStr.split():
+            query |= Q(cargo__icontains=word)
+            query |= Q(empresa__icontains=word)
+        return Cargo.objects.filter(query)
+
+    def _search_persona(self, searchStr):
+        query =Q()
+        data = searchStr.split()
+        if len(data) >= 2: # nombre y apellidos
+            return Cargo.objects\
+                .filter(persona__nombre__icontains=data[0])\
+                .filter(persona__apellidos__icontains=" ".join(data[1:]))
+        else:
+            for word in searchStr.split():
+                query |= Q(persona__nombre__icontains=word)
+                query |= Q(persona__apellidos__icontains=word)
+        return Cargo.objects.filter(query)
 
 
 class CargoDetail(generics.RetrieveUpdateDestroyAPIView):
