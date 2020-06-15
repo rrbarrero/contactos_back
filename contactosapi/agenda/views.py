@@ -93,13 +93,16 @@ class CargoList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         queryset = Cargo.objects.all()
+        pk = self.request.query_params.get('pk', None)
         searchStr = self.request.query_params.get('searchStr', None)
         colectivos = self.request.query_params.get('colectivos', None)
-        if searchStr is not None:
-            # querysetCargos = self._search_cargos(searchStr)
-            querysetCargos = []
-            querysetPersonas = self._search_persona(searchStr)
-            queryset = list(chain(querysetPersonas, querysetCargos))
+        
+        if pk:
+            queryset = queryset.filter(id=int(pk))  
+        elif searchStr is not None:
+            persona_queryset = self._search_persona(searchStr)
+            cargo_queryset = self._search_cargos(searchStr)
+            queryset = list(chain(persona_queryset, cargo_queryset))
         elif colectivos is not None and colectivos.strip():
             queryset = queryset.filter(colectivo__in=colectivos.split(','))
         return queryset
@@ -112,6 +115,7 @@ class CargoList(generics.ListCreateAPIView):
         return Cargo.objects.filter(query)
 
     def _search_persona(self, searchStr):
+        # FIXME: Con dos apellidos no funciona. Por ej. garcia ferreras
         query =Q()
         data = searchStr.split()
         if len(data) >= 2: # nombre y apellidos
@@ -119,7 +123,7 @@ class CargoList(generics.ListCreateAPIView):
                 .filter(persona__nombre__icontains=data[0])\
                 .filter(persona__apellidos__icontains=" ".join(data[1:]))
         else:
-            for word in searchStr.split():
+            for word in data:
                 query |= Q(persona__nombre__icontains=word)
                 query |= Q(persona__apellidos__icontains=word)
         return Cargo.objects.filter(query)

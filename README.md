@@ -2,6 +2,7 @@
 
 ## TODO:
 * Tabla M2M para los datos de agenda
+* Poner en naranja los contactos con cargo finalizado.
 
 
 ## Anotaciones:
