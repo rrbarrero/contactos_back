@@ -40,7 +40,7 @@ class TratamientoSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Tratamiento
-        fields = ['nombre']
+        fields = ['id', 'nombre']
 
 
 class ProvinciaSerializer(serializers.ModelSerializer):
@@ -53,31 +53,11 @@ class ProvinciaSerializer(serializers.ModelSerializer):
 class PersonaSerializer(serializers.HyperlinkedModelSerializer):
 
     cargos = serializers.StringRelatedField(many=True)
-    tratamiento = serializers.StringRelatedField()
+    tratamiento = TratamientoSerializer()
 
     class Meta:
         model = Persona
-        fields = ['nombre', 'apellidos', 'tratamiento', 'cargos']
-
-
-class CargoSerializer(serializers.HyperlinkedModelSerializer):
-
-    persona = serializers.StringRelatedField()
-    provincia = serializers.StringRelatedField()
-    pais = serializers.StringRelatedField()
-    colectivo = serializers.StringRelatedField()
-    subcolectivo = serializers.StringRelatedField()
-    usuario_modificacion = serializers.StringRelatedField()
-    telefonos = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    correos = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-
-    class Meta:
-        model = Cargo
-        fields = ['id', 'cargo', 'persona', 'finalizado', 'ciudad', 'cod_postal', 'direccion',
-             'provincia', 'pais', 'empresa', 'fecha_cese', 'fecha_alta', 'fecha_modificacion',
-             'colectivo', 'subcolectivo', 'usuario_modificacion', 'notas', 'telefonos',
-             'correos']
-
+        fields = ['id', 'nombre', 'apellidos', 'tratamiento', 'cargos']
 
 class TelefonoSerializer(serializers.ModelSerializer):
 
@@ -91,3 +71,21 @@ class CorreoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Correo
         fields = ['cargo', 'nombre', 'email', 'nota']
+
+class CargoSerializer(serializers.HyperlinkedModelSerializer):
+
+    persona = PersonaSerializer()
+    provincia = serializers.StringRelatedField()
+    pais = serializers.StringRelatedField()
+    colectivo = serializers.StringRelatedField()
+    subcolectivo = serializers.StringRelatedField()
+    usuario_modificacion = serializers.StringRelatedField()
+    telefonos = TelefonoSerializer(many=True)
+    correos = CorreoSerializer(many=True)
+
+    class Meta:
+        model = Cargo
+        fields = ['id', 'cargo', 'persona', 'finalizado', 'ciudad', 'cod_postal', 'direccion',
+             'provincia', 'pais', 'empresa', 'fecha_cese', 'fecha_alta', 'fecha_modificacion',
+             'colectivo', 'subcolectivo', 'usuario_modificacion', 'notas', 'telefonos',
+             'correos']
