@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'agenda',
-    'marcas'
+    'listas'
 ]
 
 MIDDLEWARE = [

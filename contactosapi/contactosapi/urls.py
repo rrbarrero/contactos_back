@@ -23,7 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^api-token-auth/', views.obtain_auth_token),
     re_path(r'^', include('agenda.urls')),
-    re_path(r'^', include('marcas.urls')),
+    re_path(r'^', include('listas.urls')),
 ]
 
 if settings.DEBUG:
