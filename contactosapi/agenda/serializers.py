@@ -26,14 +26,14 @@ class SubColectivoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SubColectivo
-        fields = ['nombre', 'colectivo']
+        fields = ['id', 'nombre', 'colectivo']
 
 
 class PaisSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Pais
-        fields = ['nombre']
+        fields = ['id', 'nombre']
 
 
 class TratamientoSerializer(serializers.HyperlinkedModelSerializer):
@@ -47,7 +47,7 @@ class ProvinciaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Provincia
-        fields = ['nombre']
+        fields = ['id', 'nombre']
 
 
 class PersonaSerializer(serializers.HyperlinkedModelSerializer):

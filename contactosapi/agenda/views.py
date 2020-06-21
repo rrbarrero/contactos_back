@@ -4,6 +4,7 @@ from rest_framework import filters
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework.views import APIView
+from rest_framework.response import Response
 
 from django.http import Http404
 from django.db.models import Q
@@ -41,6 +42,24 @@ class ColectivoDetail(generics.RetrieveUpdateDestroyAPIView):
 class SubColectivoList(generics.ListCreateAPIView):
     queryset = SubColectivo.objects.all()
     serializer_class = SubColectivoSerializer
+
+
+class ColectivoSubcolectivo(generics.ListAPIView):
+
+    def get(self, request, pk):
+        self.pk = pk
+        qs = self.get_queryset()
+        serializer = SubColectivoSerializer(qs, many=True)
+        return Response({
+           'results': serializer.data,
+            'count': self.result_count, 
+        })
+    
+    def get_queryset(self):
+        queryset = Colectivo.objects.get(pk=self.pk).subcolectivos.all()
+        self.result_count = len(queryset)
+        return self.paginate_queryset(queryset)
+        
 
 
 class SubColectivoDetail(generics.RetrieveUpdateDestroyAPIView):
