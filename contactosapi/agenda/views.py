@@ -98,8 +98,20 @@ class ProvinciaDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class PersonaList(generics.ListCreateAPIView):
-    queryset = Persona.objects.all()
     serializer_class = PersonaSerializer
+
+    def get(self, request):
+        queryset = Persona.objects.all()
+        nombre = self.request.query_params.get('nombre', None)
+        apellidos = self.request.query_params.get('apellidos', None)
+        if nombre and apellidos:
+            try:
+                qs = Persona.objects.get(nombre=nombre, apellidos=apellidos)
+            except Persona.DoesNotExist:
+                qs = Persona()
+            serializer = PersonaSerializer(qs)
+            return Response(serializer.data)
+        return queryset
 
 
 class PersonaDetail(generics.RetrieveUpdateDestroyAPIView):

@@ -3,7 +3,7 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import filters
 from rest_framework import viewsets
-from rest_framework import generics, status
+from rest_framework import generics, serializers, status
 
 from agenda.serializers import CargoSerializer
 from contactosapi.settings.base import REST_FRAMEWORK
@@ -11,10 +11,26 @@ from contactosapi.settings.base import REST_FRAMEWORK
 from .serializers import ListaSerializer
 from .models import Lista
 from agenda.models import Cargo
+from listas.serializers import ListaSerializerOnlyRelatedIds
 
-class ListaList(generics.ListCreateAPIView):
+class ListaList(generics.ListAPIView):
     queryset = Lista.objects.all()
     serializer_class = ListaSerializer
+
+    def get(self, request):
+        """ En lugar de devolver las instancias complegas de Cargo, devolvemos
+        solo sus ids. En caso contrario, la consulta se eterniza y no necesitamos
+        ahora esa info """
+        qs = Lista.objects.all()
+        simple_related = bool(self.request.query_params.get('simple_related', None))
+        serializer_class = ListaSerializer
+        if simple_related:
+            serializer_class =  ListaSerializerOnlyRelatedIds
+        serializer = serializer_class(qs, many=True)
+        return Response({
+            'results': serializer.data,
+            'count': len(qs)
+        })
 
     
 class ListaDetail(generics.RetrieveUpdateDestroyAPIView):

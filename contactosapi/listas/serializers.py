@@ -10,3 +10,12 @@ class ListaSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Lista
         fields = ['id', 'nombre', 'contactos', 'descripcion']
+
+
+class ListaSerializerOnlyRelatedIds(serializers.HyperlinkedModelSerializer):
+    
+    contactos = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
+    class Meta:
+        model = Lista
+        fields = ['id', 'nombre', 'contactos', 'descripcion']
