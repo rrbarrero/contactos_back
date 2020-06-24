@@ -52,7 +52,7 @@ class ProvinciaSerializer(serializers.ModelSerializer):
 
 class PersonaSerializer(serializers.HyperlinkedModelSerializer):
 
-    cargos = serializers.StringRelatedField(many=True)
+    cargos = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     tratamiento = TratamientoSerializer()
 
     class Meta:
