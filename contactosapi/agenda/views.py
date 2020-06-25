@@ -1,4 +1,5 @@
 from itertools import chain
+import datetime
 
 from rest_framework import filters
 from rest_framework import viewsets
@@ -116,17 +117,17 @@ class PersonaList(generics.ListCreateAPIView):
     def post(self, request, format=None):
         nombre = request.data['nombre']
         apellidos = request.data['apellidos']
-        tratamiento = TratamientoSerializer(data=request.data['tratamiento']).initial_data
-        
+        tratamiento_data = TratamientoSerializer(data=request.data['tratamiento']).initial_data
+        tratamiento = Tratamiento.objects.get(**tratamiento_data)
         try:
             persona = Persona.objects.get(nombre=nombre, apellidos=apellidos)
         except Persona.DoesNotExist:
             persona = Persona()
             persona.nombre = nombre
             persona.apellidos = apellidos
-            persona.tratamiento = tratamiento['id']
+            persona.tratamiento = tratamiento
             persona.save()
-        return Response(PersonaSerializer(persona))
+        return Response(PersonaSerializer(persona).data)
         
 
 
@@ -175,6 +176,53 @@ class CargoList(generics.ListCreateAPIView):
                 query |= Q(persona__nombre__icontains=word)
                 query |= Q(persona__apellidos__icontains=word)
         return Cargo.objects.filter(query)
+
+    def post(self, request, format=None):
+        cargo = request.data['cargo']
+        ciudad = request.data['ciudad']
+        cod_postal = request.data['codPostal']
+        direccion = request.data['direccion']
+        empresa = request.data['empresa']
+        fecha_alta = datetime.datetime.strptime(request.data['fechaAlta'],"%Y-%m-%dT%H:%M:%S.%fZ").date()
+        try:
+            fecha_cese = datetime.datetime.strptime(request.data['fechaCese'],"%Y-%m-%dT%H:%M:%S.%fZ").date()
+        except ValueError:
+            fecha_cese = None
+        finalizado = request.data['finalizado'] if request.data['finalizado'].strip() else False
+        notas = request.data['notas']
+        colectivo_data = ColectivoSerializer(data=request.data['colectivo']).initial_data
+        colectivo = Colectivo.objects.get(pk=colectivo_data['id'])
+        pais_data = PaisSerializer(data=request.data['pais']).initial_data
+        pais = Pais.objects.get(pk=pais_data['id'])
+        persona_data = PersonaSerializer(data=request.data['persona']).initial_data
+        persona = Persona.objects.get(pk=persona_data['id'])
+        provincia_data = ProvinciaSerializer(data=request.data['provincia']).initial_data
+        provincia = Provincia.objects.get(pk=provincia_data['id'])
+        subcolectivo_data = SubColectivoSerializer(data=request.data['subcolectivo']).initial_data
+        subcolectivo = SubColectivo.objects.get(pk=subcolectivo_data['id'])
+        try:
+            cargo = Cargo.objects.get(cargo=cargo, empresa=empresa, persona=persona)
+        except Cargo.DoesNotExist:
+            cargo = Cargo()
+            cargo.cargo = cargo
+            cargo.ciudad = ciudad
+            cargo.cod_postal = cod_postal
+            cargo.direccion = direccion
+            cargo.empresa = empresa
+            cargo.fecha_alta = fecha_alta
+            cargo.fecha_cese = fecha_cese
+            cargo.finalizado = finalizado
+            cargo.notas = notas
+            cargo.colectivo = colectivo
+            cargo.pais = pais
+            cargo.persona = persona
+            cargo.provincia = provincia
+            cargo.subcolectivo = subcolectivo
+            cargo.usuario_modificacion = request.user
+            cargo.save()
+        return Response(CargoSerializer(cargo).data)
+
+
 
 
 class CargoDetail(generics.RetrieveUpdateDestroyAPIView):

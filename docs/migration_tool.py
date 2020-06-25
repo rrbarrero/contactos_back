@@ -119,6 +119,23 @@ def cargos():
     print("Importando cargos...")
     cargos_counter = 0
     for c in PwCargo.select():
+        try:
+            personas = Persona.objects.filter(nombre=c.id_persona.nombre, apellidos=c.id_persona.apellidos).all()
+        except django.core.exceptions.ObjectDoesNotExist:
+            logger.error("Persona no encontrada {} {}. Cargo {}.!!".format(c.id_persona.nombre, c.id_persona.apellidos, c.cargo))
+            continue
+        if len(personas)>1:
+            logger.warning("Ambigüedad detectada {} {}. Cargo {}.!!".format(c.id_persona.nombre, c.id_persona.apellidos, c.cargo))
+        elif len(personas)==0:
+            logger.error("Persona no encontrada {} {}. Cargo {}.!!".format(c.id_persona.nombre, c.id_persona.apellidos, c.cargo))
+            continue
+        persona = personas[0]
+        cargos = Cargo.objects.filter(
+            cargo = c.cargo,
+            empresa = c.empresa,
+            persona = persona).all()
+        if len(cargos) > 0:
+            continue
         cargo = Cargo()
         try:
             if cargo.id_provincia.nombre.strip():
@@ -127,18 +144,7 @@ def cargos():
                 cargo.provincia = Provincia.objects.get(nombre="Sin especificar")
         except:
             cargo.provincia = Provincia.objects.get(nombre="Sin especificar")
-        try:
-            cargo.persona = Persona.objects.get(
-                nombre=c.id_persona.nombre,
-                apellidos=c.id_persona.apellidos,
-            )
-        except django.core.exceptions.MultipleObjectsReturned:
-            for persona in Persona.objects.filter(nombre=c.id_persona.nombre, apellidos=c.id_persona.apellidos):
-                logger.error("Ambigüedad detectada {} {}. Cargo {}.!!".format(persona.nombre, persona.apellidos, c.cargo))
-            continue
-        except django.core.exceptions.ObjectDoesNotExist:
-            logger.error("Persona no encontrada {} {}. Cargo {}.!!".format(c.id_persona.nombre, c.id_persona.apellidos, c.cargo))
-            continue
+        cargo.persona = persona
         cargo.cargo = c.cargo
         cargo.finalizado = c.cargo_finalizado
         cargo.ciudad = c.ciudad

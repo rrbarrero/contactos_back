@@ -101,16 +101,18 @@ class Cargo(models.Model):
     class Meta:
         db_table = 'cargos'
         verbose_name_plural = 'Cargos'
+        unique_together = ('cargo', 'persona', 'empresa')
         ordering = ['-fecha_alta']
 
     def __str__(self):
-        return "{tratamiento} {apellidos}, {nombre} <{cargo}, {empresa}>".format(
-            nombre=self.persona.nombre, 
-            apellidos=self.persona.apellidos, 
-            cargo=self.cargo,
-            empresa=self.empresa,
-            tratamiento=self.persona.tratamiento,
-        )
+        return "{}".format(self.empresa)
+        # return "{tratamiento} {apellidos}, {nombre} <{cargo}, {empresa}>".format(
+        #     nombre=self.persona, 
+        #     apellidos=self.persona.apellidos, 
+        #     cargo=self.cargo,
+        #     empresa=self.empresa,
+        #     tratamiento=self.persona.tratamiento,
+        # )
 
 
 class Telefono(models.Model):
