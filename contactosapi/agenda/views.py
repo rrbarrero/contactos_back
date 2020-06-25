@@ -113,6 +113,23 @@ class PersonaList(generics.ListCreateAPIView):
             return Response(serializer.data)
         return queryset
 
+    def post(self, request, format=None):
+        nombre = request.data['nombre']
+        apellidos = request.data['apellidos']
+        tratamiento = TratamientoSerializer(data=request.data['tratamiento']).initial_data
+        
+        try:
+            persona = Persona.objects.get(nombre=nombre, apellidos=apellidos)
+        except Persona.DoesNotExist:
+            persona = Persona()
+            persona.nombre = nombre
+            persona.apellidos = apellidos
+            persona.tratamiento = tratamiento['id']
+            persona.save()
+        return Response(PersonaSerializer(persona))
+        
+
+
 
 class PersonaDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Persona.objects.all()
