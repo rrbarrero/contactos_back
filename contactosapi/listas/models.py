@@ -3,7 +3,7 @@ from agenda.models import Cargo
 
 class Lista(models.Model):
     nombre = models.CharField(max_length=255, verbose_name='Nombre', unique=True)
-    contactos = models.ManyToManyField(Cargo)
+    contactos = models.ManyToManyField(Cargo, blank=True)
     descripcion = models.CharField(max_length=255, verbose_name='Descripción')
 
     class Meta:

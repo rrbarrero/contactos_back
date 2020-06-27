@@ -178,12 +178,11 @@ class CargoList(generics.ListCreateAPIView):
         return Cargo.objects.filter(query)
 
     def post(self, request, format=None):
-        cargo = request.data['cargo']
+        cargo_nombre = request.data['cargo']
         ciudad = request.data['ciudad']
         cod_postal = request.data['codPostal']
         direccion = request.data['direccion']
         empresa = request.data['empresa']
-        fecha_alta = datetime.datetime.strptime(request.data['fechaAlta'],"%Y-%m-%dT%H:%M:%S.%fZ").date()
         try:
             fecha_cese = datetime.datetime.strptime(request.data['fechaCese'],"%Y-%m-%dT%H:%M:%S.%fZ").date()
         except ValueError:
@@ -204,12 +203,11 @@ class CargoList(generics.ListCreateAPIView):
             cargo = Cargo.objects.get(cargo=cargo, empresa=empresa, persona=persona)
         except Cargo.DoesNotExist:
             cargo = Cargo()
-            cargo.cargo = cargo
+            cargo.cargo = cargo_nombre
             cargo.ciudad = ciudad
             cargo.cod_postal = cod_postal
             cargo.direccion = direccion
             cargo.empresa = empresa
-            cargo.fecha_alta = fecha_alta
             cargo.fecha_cese = fecha_cese
             cargo.finalizado = finalizado
             cargo.notas = notas
