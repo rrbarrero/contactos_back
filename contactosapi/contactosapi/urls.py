@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^api-token-auth/', views.obtain_auth_token),
     re_path(r'^', include('agenda.urls')),
     re_path(r'^', include('listas.urls')),
+    re_path(r'^', include('mail_templates.urls')),
 ]
 
 if settings.DEBUG:

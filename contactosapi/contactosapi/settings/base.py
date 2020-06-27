@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'agenda',
-    'listas'
+    'listas',
+    'mail_templates',
 ]
 
 MIDDLEWARE = [
