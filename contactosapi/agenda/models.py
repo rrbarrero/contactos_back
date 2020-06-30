@@ -94,7 +94,7 @@ class Cargo(models.Model):
     fecha_alta = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
     colectivo = models.ForeignKey(Colectivo, on_delete=models.PROTECT)
-    subcolectivo = models.ForeignKey(SubColectivo, on_delete=models.PROTECT)
+    subcolectivo = models.ForeignKey(SubColectivo, on_delete=models.PROTECT, null=True)
     usuario_modificacion = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     notas = models.TextField(null=True)
 

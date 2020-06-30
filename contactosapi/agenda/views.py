@@ -198,9 +198,12 @@ class CargoList(generics.ListCreateAPIView):
         provincia_data = ProvinciaSerializer(data=request.data['provincia']).initial_data
         provincia = Provincia.objects.get(pk=provincia_data['id'])
         subcolectivo_data = SubColectivoSerializer(data=request.data['subcolectivo']).initial_data
-        subcolectivo = SubColectivo.objects.get(pk=subcolectivo_data['id'])
         try:
-            cargo = Cargo.objects.get(cargo=cargo, empresa=empresa, persona=persona)
+            subcolectivo = SubColectivo.objects.get(pk=subcolectivo_data['id'])
+        except TypeError:
+            subcolectivo = None
+        try:
+            cargo = Cargo.objects.get(cargo=cargo_nombre, empresa=empresa, persona=persona)
         except Cargo.DoesNotExist:
             cargo = Cargo()
             cargo.cargo = cargo_nombre
