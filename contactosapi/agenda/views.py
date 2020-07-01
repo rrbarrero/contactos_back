@@ -187,7 +187,7 @@ class CargoList(generics.ListCreateAPIView):
             fecha_cese = datetime.datetime.strptime(request.data['fechaCese'],"%Y-%m-%dT%H:%M:%S.%fZ").date()
         except ValueError:
             fecha_cese = None
-        finalizado = request.data['finalizado'] if request.data['finalizado'].strip() else False
+        finalizado = request.data['finalizado']
         notas = request.data['notas']
         colectivo_data = ColectivoSerializer(data=request.data['colectivo']).initial_data
         colectivo = Colectivo.objects.get(pk=colectivo_data['id'])
