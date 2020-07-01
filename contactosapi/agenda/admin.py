@@ -19,12 +19,14 @@ class SubColectivoAdmin(admin.ModelAdmin):
 class PersonaAdmin(admin.ModelAdmin):
 
     search_fields = ['nombre', 'apellidos']
+    ordering = ('-id',)
 
 
 class CargoAdmin(admin.ModelAdmin):
 
-    list_display = ('persona', 'cargo', 'empresa', 'finalizado')
+    list_display = ('persona', 'cargo', 'empresa', 'finalizado', 'fecha_alta')
     search_fields = ['cargo', 'empresa', 'persona__nombre', 'persona__apellidos']
+    ordering = ('-fecha_alta',)
 
 
 class TelefonoAdmin(admin.ModelAdmin):
