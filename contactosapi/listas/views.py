@@ -56,6 +56,13 @@ class ListaCargos(generics.ListAPIView):
             lista.contactos.add(cargo)
         return Response(ListaSerializer(lista).data)
 
+    def post(self, request, pk, format=None):
+        lista = Lista.objects.get(pk=pk)
+        for _cargo in request.data['lista']['contactos']:
+            cargo = Cargo.objects.get(pk=_cargo['id'])
+            lista.contactos.remove(cargo)
+        return Response(ListaSerializer(lista).data)
+
     def get_queryset(self):
         queryset = Lista.objects.get(pk=self.pk).contactos.all()
         self.result_count = len(queryset)
