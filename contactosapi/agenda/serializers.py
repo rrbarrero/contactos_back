@@ -63,14 +63,14 @@ class TelefonoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Telefono
-        fields = ['cargo', 'nombre', 'numero', 'nota']
+        fields = ['id', 'cargo', 'nombre', 'numero', 'nota']
 
 
 class CorreoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Correo
-        fields = ['cargo', 'nombre', 'email', 'nota']
+        fields = ['id', 'cargo', 'nombre', 'email', 'nota']
 
 class CargoSerializer(serializers.HyperlinkedModelSerializer):
 
