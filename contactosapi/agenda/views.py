@@ -1,6 +1,8 @@
 from itertools import chain
 import datetime
+import pprint
 
+from rest_framework import status
 from rest_framework import filters
 from rest_framework import viewsets
 from rest_framework import generics
@@ -29,6 +31,14 @@ from agenda.serializers import PersonaSerializer
 from agenda.serializers import CargoSerializer
 from agenda.serializers import TelefonoSerializer
 from agenda.serializers import CorreoSerializer
+
+def helper_format_angular_date(dateString: str) -> datetime.datetime:
+    try:
+        _date = datetime.datetime.strptime(dateString,"%Y-%m-%dT%H:%M:%S.%fZ").date()
+    except ValueError:
+        return datetime.datetime.strptime(dateString, "%Y-%m-%d").date()
+    return _date + datetime.timedelta(days=1)
+
 
 
 class ColectivoList(generics.ListCreateAPIView):
@@ -184,7 +194,7 @@ class CargoList(generics.ListCreateAPIView):
         direccion = request.data['direccion']
         empresa = request.data['empresa']
         try:
-            fecha_cese = datetime.datetime.strptime(request.data['fechaCese'],"%Y-%m-%dT%H:%M:%S.%fZ").date()
+            fecha_cese = helper_format_angular_date(request.data['fechaCese'])
         except ValueError:
             fecha_cese = None
         finalizado = request.data['finalizado']
@@ -229,6 +239,28 @@ class CargoList(generics.ListCreateAPIView):
 class CargoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Cargo.objects.all()
     serializer_class = CargoSerializer
+
+    def patch(self, request, pk):
+        cargo = Cargo.objects.get(pk=pk)
+        pprint.pprint(request.data)
+        tratamiento = request.data['persona'].pop('tratamiento')
+        personaData = request.data.pop('persona')
+        persona = Persona.objects.get(pk=personaData['id'])
+        request.data['cod_postal'] = request.data['codPostal']
+        request.data['fecha_cese'] = helper_format_angular_date(request.data['fechaCese'])
+        personaSerializer = PersonaSerializer(persona, personaData, partial=True)
+        if personaSerializer.is_valid():
+            persona.tratamiento = Tratamiento.objects.get(pk=tratamiento['id'])
+            personaSerializer.save()
+            serializer = CargoSerializer(cargo, request.data, partial=True)
+            if serializer.is_valid():
+                cargo.colectivo = Colectivo.objects.get(nombre=request.data.pop('colectivo'))
+                cargo.subcolectivo = SubColectivo.objects.get(nombre=request.data.pop('subcolectivo'))
+                cargo.provincia = Provincia.objects.get(nombre=request.data.pop('provincia'))
+                cargo.pais = Pais.objects.get(nombre=request.data.pop('pais'))
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TelefonoList(generics.ListCreateAPIView):

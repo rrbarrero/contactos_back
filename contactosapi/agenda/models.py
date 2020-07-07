@@ -84,9 +84,9 @@ class Cargo(models.Model):
     cargo = models.CharField(max_length=500, verbose_name='Cargo')
     persona = models.ForeignKey(Persona, verbose_name='Persona', on_delete=models.CASCADE, related_name='cargos')
     finalizado = models.BooleanField()
-    ciudad = models.CharField(max_length=500, verbose_name='Ciudad')
-    cod_postal = models.CharField(max_length=5, verbose_name='Código Postal')
-    direccion = models.CharField(max_length=500, verbose_name='Dirección')
+    ciudad = models.CharField(max_length=500, verbose_name='Ciudad', blank=True)
+    cod_postal = models.CharField(max_length=5, verbose_name='Código Postal', blank=True)
+    direccion = models.CharField(max_length=500, verbose_name='Dirección', blank=True)
     provincia = models.ForeignKey(Provincia, verbose_name ='Provincia', on_delete=models.PROTECT)
     pais = models.ForeignKey(Pais, verbose_name="Pais", on_delete=models.PROTECT)
     empresa = models.CharField(max_length=500, verbose_name='Empresa')
@@ -96,7 +96,7 @@ class Cargo(models.Model):
     colectivo = models.ForeignKey(Colectivo, on_delete=models.PROTECT)
     subcolectivo = models.ForeignKey(SubColectivo, on_delete=models.PROTECT, null=True)
     usuario_modificacion = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
-    notas = models.TextField(null=True)
+    notas = models.TextField(blank=True)
 
     class Meta:
         db_table = 'cargos'
