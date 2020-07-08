@@ -18,7 +18,7 @@ class ListaList(generics.ListAPIView):
     serializer_class = ListaSerializer
 
     def get(self, request):
-        """ En lugar de devolver las instancias complegas de Cargo, devolvemos
+        """ En lugar de devolver las instancias completas de Cargo, devolvemos
         solo sus ids. En caso contrario, la consulta se eterniza y no necesitamos
         ahora esa info """
         qs = Lista.objects.all()
@@ -28,9 +28,17 @@ class ListaList(generics.ListAPIView):
             serializer_class =  ListaSerializerOnlyRelatedIds
         serializer = serializer_class(qs, many=True)
         return Response({
-            'results': serializer.data,
+            'results': self.paginate_queryset(serializer.data),
             'count': len(qs)
         })
+
+    def post(self, request):
+        lista = ListaSerializer(data=request.data, partial=True)
+        if lista.is_valid():
+            lista.save()
+            return Response(lista.data)
+        return Response(lista.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
     
 class ListaDetail(generics.RetrieveUpdateDestroyAPIView):
