@@ -1,6 +1,5 @@
 from itertools import chain
 import datetime
-import pprint
 
 from rest_framework import status
 from rest_framework import filters
@@ -242,12 +241,14 @@ class CargoDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def patch(self, request, pk):
         cargo = Cargo.objects.get(pk=pk)
-        pprint.pprint(request.data)
         tratamiento = request.data['persona'].pop('tratamiento')
         personaData = request.data.pop('persona')
         persona = Persona.objects.get(pk=personaData['id'])
+        telefonosData = request.data.pop('telefonos')
+        correosData = request.data.pop('correos')
         request.data['cod_postal'] = request.data['codPostal']
-        request.data['fecha_cese'] = helper_format_angular_date(request.data['fechaCese'])
+        if request.data['fechaCese']:
+            request.data['fecha_cese'] = helper_format_angular_date(request.data['fechaCese'])
         personaSerializer = PersonaSerializer(persona, personaData, partial=True)
         if personaSerializer.is_valid():
             persona.tratamiento = Tratamiento.objects.get(pk=tratamiento['id'])
@@ -259,8 +260,21 @@ class CargoDetail(generics.RetrieveUpdateDestroyAPIView):
                 cargo.provincia = Provincia.objects.get(nombre=request.data.pop('provincia'))
                 cargo.pais = Pais.objects.get(nombre=request.data.pop('pais'))
                 serializer.save()
+                for telf in telefonosData:
+                    telefono = Telefono.objects.get(pk=telf['id'])
+                    telefono.nombre = telf['nombre']
+                    telefono.numero = telf['numero']
+                    telefono.nota = telf['nota']
+                    telefono.save()
+                for telf in correosData:
+                    correo = Correo.objects.get(pk=telf['id'])
+                    correo.nombre = telf['nombre']
+                    correo.email = telf['email']
+                    correo.nota = telf['nota']
+                    correo.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(personaSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TelefonoList(generics.ListCreateAPIView):

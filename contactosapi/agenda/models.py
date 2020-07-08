@@ -119,7 +119,7 @@ class Telefono(models.Model):
     cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE, related_name='telefonos')
     nombre = models.CharField(max_length=255, verbose_name='Nombre')
     numero = models.CharField(max_length=255, verbose_name='Número de telf.')
-    nota = models.CharField(max_length=255, verbose_name='Nota', null=True)
+    nota = models.CharField(max_length=255, verbose_name='Nota', blank=True)
 
     class Meta:
         db_table = 'telefonos'
@@ -137,7 +137,7 @@ class Correo(models.Model):
     cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE, related_name='correos')
     nombre = models.CharField(max_length=255, verbose_name='Nombre')
     email = models.EmailField(verbose_name='E-mail')
-    nota = models.CharField(max_length=255, verbose_name='Nota', null=True)
+    nota = models.CharField(max_length=255, verbose_name='Nota', blank=True)
 
     class Meta:
         db_table = 'correos'
@@ -155,7 +155,7 @@ class OtroContacto(models.Model):
     cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=255, verbose_name='Nombre')
     dato = models.CharField(max_length=255, verbose_name='Dato de contacto')
-    nota = models.CharField(max_length=255, verbose_name='Nota', null=True)
+    nota = models.CharField(max_length=255, verbose_name='Nota', blank=True)
 
     class Meta:
         db_table = 'otros_contactos'
