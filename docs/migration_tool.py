@@ -210,7 +210,7 @@ def telefonos():
                 telf.cargo = cargo
                 telf.nombre = t.nombre if t.nombre else 'Sin especificar'
                 telf.numero = t.dato
-                telf.nota = t.info
+                telf.nota = t.info if t.info else ""
                 telf.save()
                 telefonos_counter += 1
     print(telefonos_counter)
@@ -252,7 +252,7 @@ def correos():
                 email.cargo = cargo
                 email.nombre = t.nombre if t.nombre else 'Sin especificar'
                 email.email = t.dato
-                email.nota = t.info
+                email.nota = t.info if t.info else ""
                 email.save()
                 correos_counter += 1
     print(correos_counter)
