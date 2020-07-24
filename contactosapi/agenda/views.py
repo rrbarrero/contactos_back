@@ -8,6 +8,7 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from django.contrib.auth.models import User
 from django.http import Http404
 from django.db.models import Q
 
@@ -30,6 +31,8 @@ from agenda.serializers import PersonaSerializer
 from agenda.serializers import CargoSerializer
 from agenda.serializers import TelefonoSerializer
 from agenda.serializers import CorreoSerializer
+from agenda.serializers import UserSerializer
+
 
 def helper_format_angular_date(dateString: str) -> datetime.datetime:
     try:
@@ -295,3 +298,12 @@ class CorreoList(generics.ListCreateAPIView):
 class CorreoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Correo.objects.all()
     serializer_class = CorreoSerializer
+
+
+class UserDetail(APIView):
+
+     def get(self, request, format=None):
+        current_user = request.user
+        serializer = UserSerializer(current_user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+

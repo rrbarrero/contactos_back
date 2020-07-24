@@ -4,6 +4,7 @@ from agenda import views
 
 
 urlpatterns = [
+    path('usuarios/', views.UserDetail.as_view()),
     path('colectivos/', views.ColectivoList.as_view()),
     path('colectivos/<int:pk>', views.ColectivoDetail.as_view()),
     path('colectivos/<int:pk>/subcolectivos', views.ColectivoSubcolectivo.as_view()),

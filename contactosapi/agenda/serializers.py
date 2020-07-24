@@ -1,5 +1,7 @@
 import datetime
 from django.contrib.auth.models import User
+from django.contrib.auth.models import Group
+from django.contrib.auth.models import Permission
 
 from agenda.models import Colectivo
 from agenda.models import SubColectivo
@@ -12,6 +14,30 @@ from agenda.models import Telefono
 from agenda.models import Correo
 
 from rest_framework import serializers
+
+class PermissionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Permission
+        fields = ['id', 'name', 'content_type', 'codename']
+
+
+class GroupSerializer(serializers.ModelSerializer):
+
+    permissions = PermissionSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Group
+        fields = ['id', 'name', 'permissions']
+
+class UserSerializer(serializers.ModelSerializer):
+
+    groups = GroupSerializer(many=True, read_only=True)
+    user_permissions = serializers.PrimaryKeyRelatedField(many=True, queryset=Permission.objects.all())
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'groups', 'user_permissions']
 
 
 class ColectivoSerializer(serializers.HyperlinkedModelSerializer):
