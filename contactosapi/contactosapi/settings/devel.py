@@ -10,8 +10,12 @@ DATABASES = {
         "PASSWORD": "rage",
         "HOST": "172.17.0.2",
         "PORT": "",
-    }
-    
+        'TEST': {
+            'NAME': "test_contactosapi",
+            'CHARSET': 'utf8',
+            'COLLATION': 'utf8_general_ci',
+        },
+    },
 }
 
 INSTALLED_APPS += ("debug_toolbar", 'django_extensions',)
