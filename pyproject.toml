@@ -17,6 +17,8 @@ reportlab = "*"
 peewee = "*"
 pygments = "*"
 django-cors-headers = "*"
+PyYAML = "^5.4.1"
+uritemplate = "^3.0.1"
 
 [tool.poetry.dev-dependencies]
 django-debug-toolbar = "*"

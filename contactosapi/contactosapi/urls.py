@@ -17,18 +17,39 @@ from django.contrib import admin
 from django.urls import path, re_path
 from django.conf.urls import include, url
 from django.conf import settings
+from django.views.generic import TemplateView
 from rest_framework.authtoken import views
+from rest_framework.schemas import get_schema_view
+from rest_framework.permissions import AllowAny
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    url(r'api/v1/api-token-auth/', views.obtain_auth_token),
-    re_path(r'api/v1/', include('agenda.urls')),
-    re_path(r'api/v1/', include('listas.urls')),
-    re_path(r'api/v1/', include('mail_templates.urls')),
+    path("admin/", admin.site.urls),
+    url(r"^api-auth/", include("rest_framework.urls", namespace="rest_framework")),
+    url(r"api/v1/api-token-auth/", views.obtain_auth_token),
+    re_path(r"api/v1/", include("agenda.urls")),
+    re_path(r"api/v1/", include("listas.urls")),
+    re_path(r"api/v1/", include("mail_templates.urls")),
+    path(
+        "openapi/",
+        get_schema_view(
+            title="Contactos backend",
+            description="API Backend para la aplicación de Contactos",
+        ),
+        name="openapi-schema",
+    ),
+    path(
+        "",
+        TemplateView.as_view(
+            template_name="documentation.html",
+            extra_context={"schema_url": "openapi-schema"},
+        ),
+        name="swagger-ui",
+    ),
 ]
 
 if settings.DEBUG:
     import debug_toolbar
+
     urlpatterns = [
-        url(r'^__debug__/', include(debug_toolbar.urls)),
+        url(r"^__debug__/", include(debug_toolbar.urls)),
     ] + urlpatterns

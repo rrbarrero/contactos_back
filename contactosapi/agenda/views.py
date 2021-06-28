@@ -36,17 +36,17 @@ from agenda.serializers import UserSerializer
 
 def helper_format_angular_date(dateString: str) -> datetime.datetime:
     try:
-        _date = datetime.datetime.strptime(dateString,"%Y-%m-%dT%H:%M:%S.%fZ").date()
+        _date = datetime.datetime.strptime(dateString, "%Y-%m-%dT%H:%M:%S.%fZ").date()
     except ValueError:
         return datetime.datetime.strptime(dateString, "%Y-%m-%d").date()
     return _date + datetime.timedelta(days=1)
 
 
-
 class ColectivoList(generics.ListCreateAPIView):
     queryset = Colectivo.objects.all()
     serializer_class = ColectivoSerializer
-    
+
+
 class ColectivoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Colectivo.objects.all()
     serializer_class = ColectivoSerializer
@@ -58,21 +58,23 @@ class SubColectivoList(generics.ListCreateAPIView):
 
 
 class ColectivoSubcolectivo(generics.ListAPIView):
+    serializer_class = SubColectivoSerializer
 
     def get(self, request, pk):
         self.pk = pk
         qs = self.get_queryset()
         serializer = SubColectivoSerializer(qs, many=True)
-        return Response({
-           'results': serializer.data,
-            'count': self.result_count, 
-        })
-    
+        return Response(
+            {
+                "results": serializer.data,
+                "count": self.result_count,
+            }
+        )
+
     def get_queryset(self):
         queryset = Colectivo.objects.get(pk=self.pk).subcolectivos.all()
         self.result_count = len(queryset)
         return self.paginate_queryset(queryset)
-        
 
 
 class SubColectivoDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -115,8 +117,8 @@ class PersonaList(generics.ListCreateAPIView):
 
     def get(self, request):
         queryset = Persona.objects.all()
-        nombre = self.request.query_params.get('nombre', None)
-        apellidos = self.request.query_params.get('apellidos', None)
+        nombre = self.request.query_params.get("nombre", None)
+        apellidos = self.request.query_params.get("apellidos", None)
         if nombre and apellidos:
             try:
                 qs = Persona.objects.get(nombre=nombre, apellidos=apellidos)
@@ -127,9 +129,11 @@ class PersonaList(generics.ListCreateAPIView):
         return queryset
 
     def post(self, request, format=None):
-        nombre = request.data['nombre']
-        apellidos = request.data['apellidos']
-        tratamiento_data = TratamientoSerializer(data=request.data['tratamiento']).initial_data
+        nombre = request.data["nombre"]
+        apellidos = request.data["apellidos"]
+        tratamiento_data = TratamientoSerializer(
+            data=request.data["tratamiento"]
+        ).initial_data
         tratamiento = Tratamiento.objects.get(**tratamiento_data)
         try:
             persona = Persona.objects.get(nombre=nombre, apellidos=apellidos)
@@ -140,8 +144,6 @@ class PersonaList(generics.ListCreateAPIView):
             persona.tratamiento = tratamiento
             persona.save()
         return Response(PersonaSerializer(persona).data)
-        
-
 
 
 class PersonaDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -154,22 +156,22 @@ class CargoList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         queryset = Cargo.objects.all()
-        pk = self.request.query_params.get('pk', None)
-        searchStr = self.request.query_params.get('searchStr', None)
-        colectivos = self.request.query_params.get('colectivos', None)
-        
+        pk = self.request.query_params.get("pk", None)
+        searchStr = self.request.query_params.get("searchStr", None)
+        colectivos = self.request.query_params.get("colectivos", None)
+
         if pk:
-            queryset = queryset.filter(id=int(pk))  
+            queryset = queryset.filter(id=int(pk))
         elif searchStr is not None:
             persona_queryset = self._search_persona(searchStr)
             cargo_queryset = self._search_cargos(searchStr)
             queryset = list(chain(persona_queryset, cargo_queryset))
         elif colectivos is not None and colectivos.strip():
-            queryset = queryset.filter(colectivo__in=colectivos.split(','))
+            queryset = queryset.filter(colectivo__in=colectivos.split(","))
         return queryset
-    
+
     def _search_cargos(self, searchStr):
-        query =Q()
+        query = Q()
         for word in searchStr.split():
             query |= Q(cargo__icontains=word)
             query |= Q(empresa__icontains=word)
@@ -177,12 +179,12 @@ class CargoList(generics.ListCreateAPIView):
 
     def _search_persona(self, searchStr):
         # FIXME: Con dos apellidos no funciona. Por ej. garcia ferreras
-        query =Q()
+        query = Q()
         data = searchStr.split()
-        if len(data) >= 2: # nombre y apellidos
-            return Cargo.objects\
-                .filter(persona__nombre__icontains=data[0])\
-                .filter(persona__apellidos__icontains=" ".join(data[1:]))
+        if len(data) >= 2:  # nombre y apellidos
+            return Cargo.objects.filter(persona__nombre__icontains=data[0]).filter(
+                persona__apellidos__icontains=" ".join(data[1:])
+            )
         else:
             for word in data:
                 query |= Q(persona__nombre__icontains=word)
@@ -190,32 +192,40 @@ class CargoList(generics.ListCreateAPIView):
         return Cargo.objects.filter(query)
 
     def post(self, request, format=None):
-        cargo_nombre = request.data['cargo']
-        ciudad = request.data['ciudad']
-        cod_postal = request.data['codPostal']
-        direccion = request.data['direccion']
-        empresa = request.data['empresa']
+        cargo_nombre = request.data["cargo"]
+        ciudad = request.data["ciudad"]
+        cod_postal = request.data["codPostal"]
+        direccion = request.data["direccion"]
+        empresa = request.data["empresa"]
         try:
-            fecha_cese = helper_format_angular_date(request.data['fechaCese'])
+            fecha_cese = helper_format_angular_date(request.data["fechaCese"])
         except ValueError:
             fecha_cese = None
-        finalizado = request.data['finalizado']
-        notas = request.data['notas']
-        colectivo_data = ColectivoSerializer(data=request.data['colectivo']).initial_data
-        colectivo = Colectivo.objects.get(pk=colectivo_data['id'])
-        pais_data = PaisSerializer(data=request.data['pais']).initial_data
-        pais = Pais.objects.get(pk=pais_data['id'])
-        persona_data = PersonaSerializer(data=request.data['persona']).initial_data
-        persona = Persona.objects.get(pk=persona_data['id'])
-        provincia_data = ProvinciaSerializer(data=request.data['provincia']).initial_data
-        provincia = Provincia.objects.get(pk=provincia_data['id'])
-        subcolectivo_data = SubColectivoSerializer(data=request.data['subcolectivo']).initial_data
+        finalizado = request.data["finalizado"]
+        notas = request.data["notas"]
+        colectivo_data = ColectivoSerializer(
+            data=request.data["colectivo"]
+        ).initial_data
+        colectivo = Colectivo.objects.get(pk=colectivo_data["id"])
+        pais_data = PaisSerializer(data=request.data["pais"]).initial_data
+        pais = Pais.objects.get(pk=pais_data["id"])
+        persona_data = PersonaSerializer(data=request.data["persona"]).initial_data
+        persona = Persona.objects.get(pk=persona_data["id"])
+        provincia_data = ProvinciaSerializer(
+            data=request.data["provincia"]
+        ).initial_data
+        provincia = Provincia.objects.get(pk=provincia_data["id"])
+        subcolectivo_data = SubColectivoSerializer(
+            data=request.data["subcolectivo"]
+        ).initial_data
         try:
-            subcolectivo = SubColectivo.objects.get(pk=subcolectivo_data['id'])
+            subcolectivo = SubColectivo.objects.get(pk=subcolectivo_data["id"])
         except TypeError:
             subcolectivo = None
         try:
-            cargo = Cargo.objects.get(cargo=cargo_nombre, empresa=empresa, persona=persona)
+            cargo = Cargo.objects.get(
+                cargo=cargo_nombre, empresa=empresa, persona=persona
+            )
         except Cargo.DoesNotExist:
             cargo = Cargo()
             cargo.cargo = cargo_nombre
@@ -236,44 +246,50 @@ class CargoList(generics.ListCreateAPIView):
         return Response(CargoSerializer(cargo).data)
 
 
-
-
 class CargoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Cargo.objects.all()
     serializer_class = CargoSerializer
 
     def patch(self, request, pk):
         cargo = Cargo.objects.get(pk=pk)
-        tratamiento = request.data['persona'].pop('tratamiento')
-        personaData = request.data.pop('persona')
-        persona = Persona.objects.get(pk=personaData['id'])
-        telefonosData = request.data.pop('telefonos')
-        correosData = request.data.pop('correos')
-        request.data['cod_postal'] = request.data['codPostal']
-        if request.data['fechaCese']:
-            request.data['fecha_cese'] = helper_format_angular_date(request.data['fechaCese'])
+        tratamiento = request.data["persona"].pop("tratamiento")
+        personaData = request.data.pop("persona")
+        persona = Persona.objects.get(pk=personaData["id"])
+        telefonosData = request.data.pop("telefonos")
+        correosData = request.data.pop("correos")
+        request.data["cod_postal"] = request.data["codPostal"]
+        if request.data["fechaCese"]:
+            request.data["fecha_cese"] = helper_format_angular_date(
+                request.data["fechaCese"]
+            )
         personaSerializer = PersonaSerializer(persona, personaData, partial=True)
         if personaSerializer.is_valid():
-            persona.tratamiento = Tratamiento.objects.get(pk=tratamiento['id'])
+            persona.tratamiento = Tratamiento.objects.get(pk=tratamiento["id"])
             personaSerializer.save()
             serializer = CargoSerializer(cargo, request.data, partial=True)
             if serializer.is_valid():
-                cargo.colectivo = Colectivo.objects.get(nombre=request.data.pop('colectivo'))
-                cargo.subcolectivo = SubColectivo.objects.get(nombre=request.data.pop('subcolectivo'))
-                cargo.provincia = Provincia.objects.get(nombre=request.data.pop('provincia'))
-                cargo.pais = Pais.objects.get(nombre=request.data.pop('pais'))
+                cargo.colectivo = Colectivo.objects.get(
+                    nombre=request.data.pop("colectivo")
+                )
+                cargo.subcolectivo = SubColectivo.objects.get(
+                    nombre=request.data.pop("subcolectivo")
+                )
+                cargo.provincia = Provincia.objects.get(
+                    nombre=request.data.pop("provincia")
+                )
+                cargo.pais = Pais.objects.get(nombre=request.data.pop("pais"))
                 serializer.save()
                 for telf in telefonosData:
-                    telefono = Telefono.objects.get(pk=telf['id'])
-                    telefono.nombre = telf['nombre']
-                    telefono.numero = telf['numero']
-                    telefono.nota = telf['nota']
+                    telefono = Telefono.objects.get(pk=telf["id"])
+                    telefono.nombre = telf["nombre"]
+                    telefono.numero = telf["numero"]
+                    telefono.nota = telf["nota"]
                     telefono.save()
                 for telf in correosData:
-                    correo = Correo.objects.get(pk=telf['id'])
-                    correo.nombre = telf['nombre']
-                    correo.email = telf['email']
-                    correo.nota = telf['nota']
+                    correo = Correo.objects.get(pk=telf["id"])
+                    correo.nombre = telf["nombre"]
+                    correo.email = telf["email"]
+                    correo.nota = telf["nota"]
                     correo.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -301,9 +317,7 @@ class CorreoDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class UserDetail(APIView):
-
-     def get(self, request, format=None):
+    def get(self, request, format=None):
         current_user = request.user
         serializer = UserSerializer(current_user)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
