@@ -270,6 +270,8 @@ class CorreoDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class UserDetail(APIView):
+    """Lista usuarios"""
+
     def get(self, request, format=None):
         current_user = request.user
         serializer = UserSerializer(current_user)
