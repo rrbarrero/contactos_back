@@ -248,50 +248,58 @@ class CargoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Cargo.objects.all()
     serializer_class = CargoSerializer
 
-    def patch(self, request, pk):
-        cargo = Cargo.objects.get(pk=pk)
-        tratamiento = request.data["persona"].pop("tratamiento")
-        personaData = request.data.pop("persona")
-        persona = Persona.objects.get(pk=personaData["id"])
-        telefonosData = request.data.pop("telefonos")
-        correosData = request.data.pop("correos")
-        request.data["cod_postal"] = request.data["codPostal"]
-        if request.data["fechaCese"]:
-            request.data["fecha_cese"] = helper_format_angular_date(
-                request.data["fechaCese"]
-            )
-        personaSerializer = PersonaSerializer(persona, personaData, partial=True)
-        if personaSerializer.is_valid():
-            persona.tratamiento = Tratamiento.objects.get(pk=tratamiento["id"])
-            personaSerializer.save()
-            serializer = CargoSerializer(cargo, request.data, partial=True)
-            if serializer.is_valid():
-                cargo.colectivo = Colectivo.objects.get(
-                    nombre=request.data.pop("colectivo")
-                )
-                cargo.subcolectivo = SubColectivo.objects.get(
-                    nombre=request.data.pop("subcolectivo")
-                )
-                cargo.provincia = Provincia.objects.get(
-                    nombre=request.data.pop("provincia")
-                )
-                cargo.pais = Pais.objects.get(nombre=request.data.pop("pais"))
-                serializer.save()
-                for telf in telefonosData:
-                    telefono = Telefono.objects.get(pk=telf["id"])
-                    telefono.nombre = telf["nombre"]
-                    telefono.numero = telf["numero"]
-                    telefono.nota = telf["nota"]
-                    telefono.save()
-                for telf in correosData:
-                    correo = Correo.objects.get(pk=telf["id"])
-                    correo.nombre = telf["nombre"]
-                    correo.email = telf["email"]
-                    correo.nota = telf["nota"]
-                    correo.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response(personaSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # def patch(self, request, pk):
+    #     cargo = Cargo.objects.get(pk=pk)
+    #     serializer = CargoSerializer(cargo, request.data, partial=True)
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.save()
+    #     print(serializer.data)
+    #     return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
+
+    # def patch(self, request, pk):
+    #     cargo = Cargo.objects.get(pk=pk)
+    #     # tratamiento = request.data["persona"].pop("tratamiento")
+    #     # personaData = request.data.pop("persona")
+    #     persona = Persona.objects.get(pk=cargo.persona)
+    #     telefonosData = request.data.pop("telefonos")
+    #     correosData = request.data.pop("correos")
+    #     request.data["cod_postal"] = request.data["codPostal"]
+    #     if request.data["fechaCese"]:
+    #         request.data["fecha_cese"] = helper_format_angular_date(
+    #             request.data["fechaCese"]
+    #         )
+    #     personaSerializer = PersonaSerializer(persona, personaData, partial=True)
+    #     if personaSerializer.is_valid():
+    #         persona.tratamiento = Tratamiento.objects.get(pk=tratamiento["id"])
+    #         personaSerializer.save()
+    #         serializer = CargoSerializer(cargo, request.data, partial=True)
+    #         if serializer.is_valid():
+    #             cargo.colectivo = Colectivo.objects.get(
+    #                 nombre=request.data.pop("colectivo")
+    #             )
+    #             cargo.subcolectivo = SubColectivo.objects.get(
+    #                 nombre=request.data.pop("subcolectivo")
+    #             )
+    #             cargo.provincia = Provincia.objects.get(
+    #                 nombre=request.data.pop("provincia")
+    #             )
+    #             cargo.pais = Pais.objects.get(nombre=request.data.pop("pais"))
+    #             serializer.save()
+    #             for telf in telefonosData:
+    #                 telefono = Telefono.objects.get(pk=telf["id"])
+    #                 telefono.nombre = telf["nombre"]
+    #                 telefono.numero = telf["numero"]
+    #                 telefono.nota = telf["nota"]
+    #                 telefono.save()
+    #             for telf in correosData:
+    #                 correo = Correo.objects.get(pk=telf["id"])
+    #                 correo.nombre = telf["nombre"]
+    #                 correo.email = telf["email"]
+    #                 correo.nota = telf["nota"]
+    #                 correo.save()
+    #             return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    #     return Response(personaSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TelefonoList(generics.ListCreateAPIView):

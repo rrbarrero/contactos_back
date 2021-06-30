@@ -15,11 +15,11 @@ from agenda.models import Correo
 
 from rest_framework import serializers
 
-class PermissionSerializer(serializers.ModelSerializer):
 
+class PermissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Permission
-        fields = ['id', 'name', 'content_type', 'codename']
+        fields = ["id", "name", "content_type", "codename"]
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -28,16 +28,19 @@ class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Group
-        fields = ['id', 'name', 'permissions']
+        fields = ["id", "name", "permissions"]
+
 
 class UserSerializer(serializers.ModelSerializer):
 
     groups = GroupSerializer(many=True, read_only=True)
-    user_permissions = serializers.PrimaryKeyRelatedField(many=True, queryset=Permission.objects.all())
+    user_permissions = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Permission.objects.all()
+    )
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'groups', 'user_permissions']
+        fields = ["id", "username", "groups", "user_permissions"]
 
 
 class ColectivoSerializer(serializers.HyperlinkedModelSerializer):
@@ -46,35 +49,31 @@ class ColectivoSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Colectivo
-        fields = ['id', 'nombre', 'subcolectivos']
+        fields = ["id", "nombre", "subcolectivos"]
 
-    
+
 class SubColectivoSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = SubColectivo
-        fields = ['id', 'nombre', 'colectivo']
+        fields = ["id", "nombre", "colectivo"]
 
 
 class PaisSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Pais
-        fields = ['id', 'nombre']
+        fields = ["id", "nombre"]
 
 
 class TratamientoSerializer(serializers.HyperlinkedModelSerializer):
-
     class Meta:
         model = Tratamiento
-        fields = ['id', 'nombre']
+        fields = ["id", "nombre"]
 
 
 class ProvinciaSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Provincia
-        fields = ['id', 'nombre']
+        fields = ["id", "nombre"]
 
 
 class PersonaSerializer(serializers.HyperlinkedModelSerializer):
@@ -84,25 +83,25 @@ class PersonaSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Persona
-        fields = ['id', 'nombre', 'apellidos', 'tratamiento', 'cargos']
+        fields = ["id", "nombre", "apellidos", "tratamiento", "cargos"]
+
 
 class TelefonoSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Telefono
-        fields = ['id', 'cargo', 'nombre', 'numero', 'nota']
+        fields = ["id", "cargo", "nombre", "numero", "nota"]
 
 
 class CorreoSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Correo
-        fields = ['id', 'cargo', 'nombre', 'email', 'nota']
+        fields = ["id", "cargo", "nombre", "email", "nota"]
+
 
 class CargoSerializer(serializers.HyperlinkedModelSerializer):
 
     persona = PersonaSerializer()
-    provincia = serializers.StringRelatedField()
+    provincia = serializers.IntegerField(write_only=True)
     pais = serializers.StringRelatedField()
     colectivo = serializers.StringRelatedField()
     subcolectivo = serializers.StringRelatedField()
@@ -112,20 +111,37 @@ class CargoSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Cargo
-        fields = ['id', 'cargo', 'persona', 'finalizado', 'ciudad', 'cod_postal', 'direccion',
-             'provincia', 'pais', 'empresa', 'fecha_cese', 'fecha_alta', 'fecha_modificacion',
-             'colectivo', 'subcolectivo', 'usuario_modificacion', 'notas', 'telefonos',
-             'correos']
+        fields = [
+            "id",
+            "cargo",
+            "persona",
+            "finalizado",
+            "ciudad",
+            "cod_postal",
+            "direccion",
+            "provincia",
+            "pais",
+            "empresa",
+            "fecha_cese",
+            "fecha_alta",
+            "fecha_modificacion",
+            "colectivo",
+            "subcolectivo",
+            "usuario_modificacion",
+            "notas",
+            "telefonos",
+            "correos",
+        ]
 
     def update(self, instance, validated_data):
-        instance.cargo = validated_data.get('cargo', instance.cargo)
-        instance.ciudad = validated_data.get('ciudad', instance.ciudad)
-        instance.cod_postal = validated_data.get('cod_postal', instance.cod_postal)
-        instance.direccion = validated_data.get('direccion', instance.direccion)
-        instance.empresa = validated_data.get('empresa', instance.empresa)
-        instance.fecha_cese = validated_data.get('fecha_cese', instance.fecha_cese)
+        instance.cargo = validated_data.get("cargo", instance.cargo)
+        instance.ciudad = validated_data.get("ciudad", instance.ciudad)
+        instance.cod_postal = validated_data.get("cod_postal", instance.cod_postal)
+        instance.direccion = validated_data.get("direccion", instance.direccion)
+        instance.empresa = validated_data.get("empresa", instance.empresa)
+        instance.fecha_cese = validated_data.get("fecha_cese", instance.fecha_cese)
         instance.fecha_modificacion = datetime.datetime.now()
-        instance.finalizado = validated_data.get('finalizado', instance.finalizado)
-        instance.notas = validated_data.get('notas', instance.notas)
+        instance.finalizado = validated_data.get("finalizado", instance.finalizado)
+        instance.notas = validated_data.get("notas", instance.notas)
         instance.save()
         return instance

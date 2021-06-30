@@ -30,8 +30,8 @@ urlpatterns = [
     ),
     path("personas/", views.PersonaList.as_view(), name="persona-list"),
     path("personas/<int:pk>", views.PersonaDetail.as_view(), name="persona-detail"),
-    path("cargos/", views.CargoList.as_view()),
-    path("cargos/<int:pk>", views.CargoDetail.as_view()),
+    path("cargos/", views.CargoList.as_view(), name="cargo-list"),
+    path("cargos/<int:pk>", views.CargoDetail.as_view(), name="cargo-detail"),
     path("telefonos/", views.TelefonoList.as_view()),
     path("correos/", views.CorreoList.as_view()),
 ]
