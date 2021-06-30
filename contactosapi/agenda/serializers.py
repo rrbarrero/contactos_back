@@ -140,16 +140,3 @@ class CargoSerializer(serializers.HyperlinkedModelSerializer):
             "telefonos",
             "correos",
         ]
-
-    # def update(self, instance, validated_data):
-    #     instance.cargo = validated_data.get("cargo", instance.cargo)
-    #     instance.ciudad = validated_data.get("ciudad", instance.ciudad)
-    #     instance.cod_postal = validated_data.get("cod_postal", instance.cod_postal)
-    #     instance.direccion = validated_data.get("direccion", instance.direccion)
-    #     instance.empresa = validated_data.get("empresa", instance.empresa)
-    #     instance.fecha_cese = validated_data.get("fecha_cese", instance.fecha_cese)
-    #     instance.fecha_modificacion = datetime.datetime.now()
-    #     instance.finalizado = validated_data.get("finalizado", instance.finalizado)
-    #     instance.notas = validated_data.get("notas", instance.notas)
-    #     instance.save()
-    #     return instance
