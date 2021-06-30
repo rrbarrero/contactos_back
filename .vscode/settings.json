@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "/home/roberto/.cache/pypoetry/virtualenvs/contactosapi-imj3okg_-py3.8/bin/",
+    "python.pythonPath": "/home/roberto/.cache/pypoetry/virtualenvs/contactosapi-inygQktK-py3.8",
     "python.testing.unittestArgs": [
         "-v",
         "-s",
@@ -9,5 +9,8 @@
     ],
     "python.testing.pytestEnabled": false,
     "python.testing.nosetestsEnabled": false,
-    "python.testing.unittestEnabled": true
+    "python.testing.unittestEnabled": true,
+    "python.linting.pylintArgs": [
+        "--load-plugins=pylint_django"
+    ]
 }

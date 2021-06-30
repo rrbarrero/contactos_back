@@ -1,9 +1,10 @@
 import json
-from django.contrib.auth.models import User
-from django.urls import include, reverse, path
-from rest_framework import status
-from rest_framework.test import APITestCase, APIRequestFactory, URLPatternsTestCase
+
 from agenda.models import Persona, Tratamiento
+from django.contrib.auth.models import User
+from django.urls import include, path, reverse
+from rest_framework import status
+from rest_framework.test import APIRequestFactory, APITestCase, URLPatternsTestCase
 
 
 class PaisTestCase(APITestCase, URLPatternsTestCase):

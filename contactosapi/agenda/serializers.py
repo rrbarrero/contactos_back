@@ -100,14 +100,22 @@ class CorreoSerializer(serializers.ModelSerializer):
 
 class CargoSerializer(serializers.HyperlinkedModelSerializer):
 
-    persona = PersonaSerializer()
-    provincia = serializers.IntegerField(write_only=True)
-    pais = serializers.StringRelatedField()
-    colectivo = serializers.StringRelatedField()
-    subcolectivo = serializers.StringRelatedField()
-    usuario_modificacion = serializers.StringRelatedField()
-    telefonos = TelefonoSerializer(many=True)
-    correos = CorreoSerializer(many=True)
+    persona = serializers.PrimaryKeyRelatedField(queryset=Persona.objects.all())
+    provincia = serializers.PrimaryKeyRelatedField(queryset=Provincia.objects.all())
+    pais = serializers.PrimaryKeyRelatedField(queryset=Pais.objects.all())
+    colectivo = serializers.PrimaryKeyRelatedField(queryset=Colectivo.objects.all())
+    subcolectivo = serializers.PrimaryKeyRelatedField(
+        queryset=SubColectivo.objects.all()
+    )
+    usuario_modificacion = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all()
+    )
+    telefonos = serializers.PrimaryKeyRelatedField(
+        queryset=Telefono.objects.all(), many=True
+    )
+    correos = serializers.PrimaryKeyRelatedField(
+        queryset=Correo.objects.all(), many=True
+    )
 
     class Meta:
         model = Cargo
@@ -133,15 +141,15 @@ class CargoSerializer(serializers.HyperlinkedModelSerializer):
             "correos",
         ]
 
-    def update(self, instance, validated_data):
-        instance.cargo = validated_data.get("cargo", instance.cargo)
-        instance.ciudad = validated_data.get("ciudad", instance.ciudad)
-        instance.cod_postal = validated_data.get("cod_postal", instance.cod_postal)
-        instance.direccion = validated_data.get("direccion", instance.direccion)
-        instance.empresa = validated_data.get("empresa", instance.empresa)
-        instance.fecha_cese = validated_data.get("fecha_cese", instance.fecha_cese)
-        instance.fecha_modificacion = datetime.datetime.now()
-        instance.finalizado = validated_data.get("finalizado", instance.finalizado)
-        instance.notas = validated_data.get("notas", instance.notas)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.cargo = validated_data.get("cargo", instance.cargo)
+    #     instance.ciudad = validated_data.get("ciudad", instance.ciudad)
+    #     instance.cod_postal = validated_data.get("cod_postal", instance.cod_postal)
+    #     instance.direccion = validated_data.get("direccion", instance.direccion)
+    #     instance.empresa = validated_data.get("empresa", instance.empresa)
+    #     instance.fecha_cese = validated_data.get("fecha_cese", instance.fecha_cese)
+    #     instance.fecha_modificacion = datetime.datetime.now()
+    #     instance.finalizado = validated_data.get("finalizado", instance.finalizado)
+    #     instance.notas = validated_data.get("notas", instance.notas)
+    #     instance.save()
+    #     return instance

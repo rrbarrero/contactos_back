@@ -215,7 +215,6 @@ class CargoTestCase(APITestCase, URLPatternsTestCase):
         )
         response = self.client.get(urlList, format="json")
         response_data = json.loads(response.content)
-        print(response_data)
         self.assertEqual(
             response_data["results"][0]["cargo"], "cargo_actualizado_test_2"
         )
