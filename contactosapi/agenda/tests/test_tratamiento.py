@@ -20,7 +20,7 @@ class TratamientoTestCase(APITestCase, URLPatternsTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_tratamiento_return_len_ok(self):
-        """Crear país"""
+        """Crear tratamiento"""
         url = reverse("tratamiento-list")
         self.client.post(
             url,
@@ -42,7 +42,7 @@ class TratamientoTestCase(APITestCase, URLPatternsTestCase):
         self.assertEqual(response_data["count"], 3)
 
     def test_elimina_tratamiento_return_len_ok(self):
-        """Elimina país"""
+        """Elimina tratamiento"""
         urlList = reverse("tratamiento-list")
         self.client.post(urlList, {"nombre": "tratamiento_test_1"}, format="json")
         self.client.post(urlList, {"nombre": "tratamiento_test_2"}, format="json")
@@ -55,10 +55,11 @@ class TratamientoTestCase(APITestCase, URLPatternsTestCase):
         self.assertEqual(response_data["count"], 2)
 
     def test_actualiza_un_tratamiento_return_details_ok(self):
-        """Actualiza país"""
-        url = reverse("tratamiento-detail", args=(1,))
+        """Actualiza tratamiento"""
         urlList = reverse("tratamiento-list")
         self.client.post(urlList, {"nombre": "tratamiento_test_1"}, format="json")
+        tratamiento = Tratamiento.objects.first()
+        url = reverse("tratamiento-detail", args=(tratamiento.id,))
         self.client.patch(
             url, {"nombre": "tratamiento_actualizado_test_2"}, format="json"
         )
