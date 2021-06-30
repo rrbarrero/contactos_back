@@ -261,13 +261,13 @@ def correos():
 
 
 if __name__ == '__main__':
-    reset_tables()
-    tratamientos()
-    provincias()
-    paises()
-    personas()
-    colectivos()
-    subcolectivos()
+    #reset_tables()
+    #tratamientos()
+    #provincias()
+    #paises()
+    #personas()
+    #colectivos()
+    #subcolectivos()
     cargos()
     telefonos()
     correos()

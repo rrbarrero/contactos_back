@@ -6,7 +6,7 @@
 
 from peewee import *
 
-database = MySQLDatabase('contactos_original', **{'charset': 'utf8', 'sql_mode': 'PIPES_AS_CONCAT', 'use_unicode': True, 'host': '172.17.0.2', 'port': 3306, 'user': 'root', 'password': 'rage'})
+database = MySQLDatabase('contactos', **{'charset': 'utf8', 'sql_mode': 'PIPES_AS_CONCAT', 'use_unicode': True, 'host': '172.17.0.2', 'port': 3306, 'user': 'root', 'password': 'rage'})
 
 class UnknownField(object):
     def __init__(self, *_, **__): pass

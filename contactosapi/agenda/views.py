@@ -121,12 +121,10 @@ class PersonaList(generics.ListCreateAPIView):
         apellidos = self.request.query_params.get("apellidos", None)
         if nombre and apellidos:
             try:
-                qs = Persona.objects.get(nombre=nombre, apellidos=apellidos)
+                queryset = Persona.objects.get(nombre=nombre, apellidos=apellidos)
             except Persona.DoesNotExist:
-                qs = Persona()
-            serializer = PersonaSerializer(qs)
-            return Response(serializer.data)
-        return queryset
+                queryset = Persona()
+        return Response(PersonaSerializer(queryset, many=True).data)
 
     def post(self, request, format=None):
         nombre = request.data["nombre"]

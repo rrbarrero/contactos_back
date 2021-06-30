@@ -28,6 +28,8 @@ peewee = "*"
 pylint = "*"
 pymysql = "*"
 black = {version = "^21.6b0", allow-prereleases = true}
+coverage = "^5.5"
+pylint-django = "^2.4.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

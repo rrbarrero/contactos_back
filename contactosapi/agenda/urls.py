@@ -18,10 +18,18 @@ urlpatterns = [
     ),
     path("paises/", views.PaisList.as_view(), name="pais-list"),
     path("paises/<int:pk>", views.PaisDetail.as_view(), name="pais-detail"),
-    path("tratamientos/", views.TratamientoList.as_view()),
-    path("provincias/", views.ProvinciaList.as_view()),
-    path("personas/", views.PersonaList.as_view()),
-    path("personas/<int:pk>", views.PersonaDetail.as_view()),
+    path("tratamientos/", views.TratamientoList.as_view(), name="tratamiento-list"),
+    path(
+        "tratamientos/<int:pk>",
+        views.TratamientoDetail.as_view(),
+        name="tratamiento-detail",
+    ),
+    path("provincias/", views.ProvinciaList.as_view(), name="provincia-list"),
+    path(
+        "provincias/<int:pk>", views.ProvinciaDetail.as_view(), name="provincia-detail"
+    ),
+    path("personas/", views.PersonaList.as_view(), name="persona-list"),
+    path("personas/<int:pk>", views.PersonaDetail.as_view(), name="persona-detail"),
     path("cargos/", views.CargoList.as_view()),
     path("cargos/<int:pk>", views.CargoDetail.as_view()),
     path("telefonos/", views.TelefonoList.as_view()),
