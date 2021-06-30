@@ -52,9 +52,9 @@ class ColectivosTestCase(APITestCase, URLPatternsTestCase):
 
     def test_actualiza_un_colectivo_return_details_ok(self):
         """Actualiza Colectivos"""
-        url = reverse("colectivo-detail", args=(1,))
         urlList = reverse("colectivo-list")
-        self.client.post(urlList, {"nombre": "colectivo_test_1"}, format="json")
+        colectivo = Colectivo.objects.create(nombre="colectivo_test_1")
+        url = reverse("colectivo-detail", args=(colectivo.id,))
         self.client.patch(
             url, {"nombre": "colectivo_actualizado_test_2"}, format="json"
         )

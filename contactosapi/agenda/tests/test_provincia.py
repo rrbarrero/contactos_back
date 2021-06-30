@@ -56,9 +56,9 @@ class ProvinciaTestCase(APITestCase, URLPatternsTestCase):
 
     def test_actualiza_un_provincia_return_details_ok(self):
         """Actualiza provincia"""
-        url = reverse("provincia-detail", args=(1,))
         urlList = reverse("provincia-list")
-        self.client.post(urlList, {"nombre": "provincia_test_1"}, format="json")
+        provincia = Provincia.objects.create(nombre="provincia_test_1")
+        url = reverse("provincia-detail", args=(provincia.id,))
         self.client.patch(
             url, {"nombre": "provincia_actualizado_test_2"}, format="json"
         )

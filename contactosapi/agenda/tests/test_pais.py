@@ -56,9 +56,9 @@ class PaisTestCase(APITestCase, URLPatternsTestCase):
 
     def test_actualiza_un_pais_return_details_ok(self):
         """Actualiza país"""
-        url = reverse("pais-detail", args=(1,))
         urlList = reverse("pais-list")
-        self.client.post(urlList, {"nombre": "pais_test_1"}, format="json")
+        pais = Pais.objects.create(nombre="pais_test_1")
+        url = reverse("pais-detail", args=(pais.id,))
         self.client.patch(url, {"nombre": "pais_actualizado_test_2"}, format="json")
         response = self.client.get(urlList, format="json")
         response_data = json.loads(response.content)
