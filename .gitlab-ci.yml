@@ -12,7 +12,5 @@ before_script:
   - pip install -r requirements.txt
 
 test:
-  variables:
-    GIT_SSL_NO_VERIFY False
   script:
     - python manage.py test
