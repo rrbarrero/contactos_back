@@ -113,35 +113,8 @@ class ProvinciaDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class PersonaList(generics.ListCreateAPIView):
+    queryset = Persona.objects.all()
     serializer_class = PersonaSerializer
-
-    def get(self, request):
-        queryset = Persona.objects.all()
-        nombre = self.request.query_params.get("nombre", None)
-        apellidos = self.request.query_params.get("apellidos", None)
-        if nombre and apellidos:
-            try:
-                queryset = Persona.objects.get(nombre=nombre, apellidos=apellidos)
-            except Persona.DoesNotExist:
-                queryset = Persona()
-        return Response(PersonaSerializer(queryset, many=True).data)
-
-    def post(self, request, format=None):
-        nombre = request.data["nombre"]
-        apellidos = request.data["apellidos"]
-        tratamiento_data = TratamientoSerializer(
-            data=request.data["tratamiento"]
-        ).initial_data
-        tratamiento = Tratamiento.objects.get(**tratamiento_data)
-        try:
-            persona = Persona.objects.get(nombre=nombre, apellidos=apellidos)
-        except Persona.DoesNotExist:
-            persona = Persona()
-            persona.nombre = nombre
-            persona.apellidos = apellidos
-            persona.tratamiento = tratamiento
-            persona.save()
-        return Response(PersonaSerializer(persona).data)
 
 
 class PersonaDetail(generics.RetrieveUpdateDestroyAPIView):

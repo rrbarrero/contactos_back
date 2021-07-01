@@ -29,7 +29,7 @@ class PaisTestCase(APITestCase, URLPatternsTestCase):
             {
                 "nombre": "nombre_test_4",
                 "apellidos": "apellidos_test_4",
-                "tratamiento": {"id": tratamiento.id, "nombre": tratamiento.nombre},
+                "tratamiento": 1,
             },
             format="json",
         )
@@ -45,7 +45,7 @@ class PaisTestCase(APITestCase, URLPatternsTestCase):
         self.client.delete(url)
         response = self.client.get(urlList, format="json")
         response_data = json.loads(response.content)
-        self.assertEqual(len(response_data), 2)
+        self.assertEqual(response_data["count"], 2)
 
     def test_actualiza_persona_return_details_ok(self):
         """Actualiza persona"""
@@ -54,5 +54,5 @@ class PaisTestCase(APITestCase, URLPatternsTestCase):
         url = reverse("persona-detail", args=(persona.id,))
         self.client.patch(url, {"nombre": "nombre_actualizado_test_2"}, format="json")
         response = self.client.get(urlList, format="json")
-        response_data = json.loads(response.content)
+        response_data = json.loads(response.content)["results"]
         self.assertEqual(response_data[0]["nombre"], "nombre_actualizado_test_2")
