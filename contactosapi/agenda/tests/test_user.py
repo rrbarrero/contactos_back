@@ -8,10 +8,10 @@ from rest_framework.test import APITestCase, APIRequestFactory, URLPatternsTestC
 
 class UserTestCase(APITestCase, URLPatternsTestCase):
     urlpatterns = [path("", include("contactosapi.urls"))]
+    fixtures = ["users.yaml"]
 
     def setUp(self):
-        self.user = User.objects.create_user(username="testuser", password="12345")
-        # self.client.login(username="testuser", password="12345")
+        self.user = User.objects.get(pk=1)
 
     def test_usuario_puede_logarse_y_obtener_token(self):
         url = reverse("user-login")

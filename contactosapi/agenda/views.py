@@ -150,98 +150,16 @@ class PersonaDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class CargoList(generics.ListCreateAPIView):
+    queryset = Cargo.objects.all()
     serializer_class = CargoSerializer
 
-    def get_queryset(self):
-        queryset = Cargo.objects.all()
-        pk = self.request.query_params.get("pk", None)
-        searchStr = self.request.query_params.get("searchStr", None)
-        colectivos = self.request.query_params.get("colectivos", None)
-
-        if pk:
-            queryset = queryset.filter(id=int(pk))
-        elif searchStr is not None:
-            persona_queryset = self._search_persona(searchStr)
-            cargo_queryset = self._search_cargos(searchStr)
-            queryset = list(chain(persona_queryset, cargo_queryset))
-        elif colectivos is not None and colectivos.strip():
-            queryset = queryset.filter(colectivo__in=colectivos.split(","))
-        return queryset
-
-    def _search_cargos(self, searchStr):
-        query = Q()
-        for word in searchStr.split():
-            query |= Q(cargo__icontains=word)
-            query |= Q(empresa__icontains=word)
-        return Cargo.objects.filter(query)
-
-    def _search_persona(self, searchStr):
-        # FIXME: Con dos apellidos no funciona. Por ej. garcia ferreras
-        query = Q()
-        data = searchStr.split()
-        if len(data) >= 2:  # nombre y apellidos
-            return Cargo.objects.filter(persona__nombre__icontains=data[0]).filter(
-                persona__apellidos__icontains=" ".join(data[1:])
-            )
-        else:
-            for word in data:
-                query |= Q(persona__nombre__icontains=word)
-                query |= Q(persona__apellidos__icontains=word)
-        return Cargo.objects.filter(query)
-
-    def post(self, request, format=None):
-        cargo_nombre = request.data["cargo"]
-        ciudad = request.data["ciudad"]
-        cod_postal = request.data["codPostal"]
-        direccion = request.data["direccion"]
-        empresa = request.data["empresa"]
-        try:
-            fecha_cese = helper_format_angular_date(request.data["fechaCese"])
-        except ValueError:
-            fecha_cese = None
-        finalizado = request.data["finalizado"]
-        notas = request.data["notas"]
-        colectivo_data = ColectivoSerializer(
-            data=request.data["colectivo"]
-        ).initial_data
-        colectivo = Colectivo.objects.get(pk=colectivo_data["id"])
-        pais_data = PaisSerializer(data=request.data["pais"]).initial_data
-        pais = Pais.objects.get(pk=pais_data["id"])
-        persona_data = PersonaSerializer(data=request.data["persona"]).initial_data
-        persona = Persona.objects.get(pk=persona_data["id"])
-        provincia_data = ProvinciaSerializer(
-            data=request.data["provincia"]
-        ).initial_data
-        provincia = Provincia.objects.get(pk=provincia_data["id"])
-        subcolectivo_data = SubColectivoSerializer(
-            data=request.data["subcolectivo"]
-        ).initial_data
-        try:
-            subcolectivo = SubColectivo.objects.get(pk=subcolectivo_data["id"])
-        except TypeError:
-            subcolectivo = None
-        try:
-            cargo = Cargo.objects.get(
-                cargo=cargo_nombre, empresa=empresa, persona=persona
-            )
-        except Cargo.DoesNotExist:
-            cargo = Cargo()
-            cargo.cargo = cargo_nombre
-            cargo.ciudad = ciudad
-            cargo.cod_postal = cod_postal
-            cargo.direccion = direccion
-            cargo.empresa = empresa
-            cargo.fecha_cese = fecha_cese
-            cargo.finalizado = finalizado
-            cargo.notas = notas
-            cargo.colectivo = colectivo
-            cargo.pais = pais
-            cargo.persona = persona
-            cargo.provincia = provincia
-            cargo.subcolectivo = subcolectivo
-            cargo.usuario_modificacion = request.user
-            cargo.save()
-        return Response(CargoSerializer(cargo).data)
+    def post(self, request):
+        data = request.data.copy()
+        data["usuario_modifacion"] = request.user.id
+        serializer = CargoSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class CargoDetail(generics.RetrieveUpdateDestroyAPIView):

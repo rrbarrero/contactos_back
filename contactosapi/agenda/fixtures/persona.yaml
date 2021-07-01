@@ -1,0 +1,18 @@
+- model: agenda.persona
+  pk: 1
+  fields:
+    nombre: nombre_test_1
+    apellidos: apellidos_test_1
+    tratamiento: 1
+- model: agenda.persona
+  pk: 2
+  fields:
+    nombre: nombre_test_2
+    apellidos: apellidos_test_2
+    tratamiento: 2
+- model: agenda.persona
+  pk: 3
+  fields:
+    nombre: nombre_test_3
+    apellidos: apellidos_test_3
+    tratamiento: 3

@@ -1,0 +1,15 @@
+- model: auth.user
+  pk: 1
+  fields:
+    username: testuser
+    password: "pbkdf2_sha256$260000$8HQa32yWAFWRKZCTdwLieM$kbaPSPu/Ta27+RH4k6uHDfcWjDDjEI9FXSfxcp6eWBE="
+- model: auth.user
+  pk: 2
+  fields:
+    username: testuser2
+    password: "pbkdf2_sha256$260000$8HQa32yWAFWRKZCTdwLieM$kbaPSPu/Ta27+RH4k6uHDfcWjDDjEI9FXSfxcp6eWBE="
+- model: auth.user
+  pk: 3
+  fields:
+    username: testuser3
+    password: "pbkdf2_sha256$260000$8HQa32yWAFWRKZCTdwLieM$kbaPSPu/Ta27+RH4k6uHDfcWjDDjEI9FXSfxcp6eWBE="

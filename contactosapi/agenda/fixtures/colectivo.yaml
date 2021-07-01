@@ -1,0 +1,12 @@
+- model: agenda.colectivo
+  pk: 1
+  fields:
+    nombre: colectivo_test_1
+- model: agenda.colectivo
+  pk: 2
+  fields:
+    nombre: colectivo_test_2
+- model: agenda.colectivo
+  pk: 3
+  fields:
+    nombre: colectivo_test_3

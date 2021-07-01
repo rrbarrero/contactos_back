@@ -1,0 +1,15 @@
+- model: agenda.subcolectivo
+  pk: 1
+  fields:
+    nombre: subcolectivo_test_1
+    colectivo: 1
+- model: agenda.subcolectivo
+  pk: 2
+  fields:
+    nombre: subcolectivo_test_2
+    colectivo: 2
+- model: agenda.subcolectivo
+  pk: 3
+  fields:
+    nombre: subcolectivo_test_3
+    colectivo: 3

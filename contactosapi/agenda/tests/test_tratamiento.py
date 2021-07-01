@@ -8,9 +8,9 @@ from agenda.models import Tratamiento
 
 class TratamientoTestCase(APITestCase, URLPatternsTestCase):
     urlpatterns = [path("", include("contactosapi.urls"))]
+    fixtures = ["users.yaml", "tratamiento.yaml"]
 
     def setUp(self):
-        self.user = User.objects.create_user(username="testuser", password="12345")
         self.client.login(username="testuser", password="12345")
 
     def test_lista_tratamientos_return_http_ok(self):
@@ -24,29 +24,26 @@ class TratamientoTestCase(APITestCase, URLPatternsTestCase):
         url = reverse("tratamiento-list")
         self.client.post(
             url,
-            {"nombre": "tratamiento_test_1"},
+            {"nombre": "tratamiento_test_4"},
             format="json",
         )
         self.client.post(
             url,
-            {"nombre": "tratamiento_test_2"},
+            {"nombre": "tratamiento_test_5"},
             format="json",
         )
         self.client.post(
             url,
-            {"nombre": "tratamiento_test_3"},
+            {"nombre": "tratamiento_test_6"},
             format="json",
         )
         response = self.client.get(url, format="json")
         response_data = json.loads(response.content)
-        self.assertEqual(response_data["count"], 3)
+        self.assertEqual(response_data["count"], 6)
 
     def test_elimina_tratamiento_return_len_ok(self):
         """Elimina tratamiento"""
         urlList = reverse("tratamiento-list")
-        self.client.post(urlList, {"nombre": "tratamiento_test_1"}, format="json")
-        self.client.post(urlList, {"nombre": "tratamiento_test_2"}, format="json")
-        self.client.post(urlList, {"nombre": "tratamiento_test_3"}, format="json")
         tratamiento = Tratamiento.objects.first()
         url = reverse("tratamiento-detail", args=(tratamiento.id,))
         self.client.delete(url)
@@ -57,7 +54,6 @@ class TratamientoTestCase(APITestCase, URLPatternsTestCase):
     def test_actualiza_un_tratamiento_return_details_ok(self):
         """Actualiza tratamiento"""
         urlList = reverse("tratamiento-list")
-        self.client.post(urlList, {"nombre": "tratamiento_test_1"}, format="json")
         tratamiento = Tratamiento.objects.first()
         url = reverse("tratamiento-detail", args=(tratamiento.id,))
         self.client.patch(

@@ -1,0 +1,12 @@
+- model: agenda.provincia
+  pk: 1
+  fields:
+    nombre: provincia_test_1
+- model: agenda.provincia
+  pk: 2
+  fields:
+    nombre: provincia_test_2
+- model: agenda.provincia
+  pk: 3
+  fields:
+    nombre: provincia_test_3

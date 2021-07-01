@@ -1,0 +1,12 @@
+- model: agenda.pais
+  pk: 1
+  fields:
+    nombre: pais_test_1
+- model: agenda.pais
+  pk: 2
+  fields:
+    nombre: pais_test_2
+- model: agenda.pais
+  pk: 3
+  fields:
+    nombre: pais_test_3

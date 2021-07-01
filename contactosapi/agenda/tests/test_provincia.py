@@ -9,9 +9,9 @@ from rest_framework.test import APIRequestFactory, APITestCase, URLPatternsTestC
 
 class ProvinciaTestCase(APITestCase, URLPatternsTestCase):
     urlpatterns = [path("", include("contactosapi.urls"))]
+    fixtures = ["users.yaml", "provincia.yaml"]
 
     def setUp(self):
-        self.user = User.objects.create_user(username="testuser", password="12345")
         self.client.login(username="testuser", password="12345")
 
     def test_lista_provincias_return_http_ok(self):
@@ -25,29 +25,26 @@ class ProvinciaTestCase(APITestCase, URLPatternsTestCase):
         url = reverse("provincia-list")
         self.client.post(
             url,
-            {"nombre": "provincia_test_1"},
+            {"nombre": "provincia_test_4"},
             format="json",
         )
         self.client.post(
             url,
-            {"nombre": "provincia_test_2"},
+            {"nombre": "provincia_test_5"},
             format="json",
         )
         self.client.post(
             url,
-            {"nombre": "provincia_test_3"},
+            {"nombre": "provincia_test_6"},
             format="json",
         )
         response = self.client.get(url, format="json")
         response_data = json.loads(response.content)
-        self.assertEqual(response_data["count"], 3)
+        self.assertEqual(response_data["count"], 6)
 
     def test_elimina_provincia_return_len_ok(self):
         """Elimina provincia"""
         urlList = reverse("provincia-list")
-        self.client.post(urlList, {"nombre": "provincia_test_1"}, format="json")
-        self.client.post(urlList, {"nombre": "provincia_test_2"}, format="json")
-        self.client.post(urlList, {"nombre": "provincia_test_3"}, format="json")
         provincia = Provincia.objects.first()
         url = reverse("provincia-detail", args=(provincia.id,))
         self.client.delete(url)
@@ -58,7 +55,7 @@ class ProvinciaTestCase(APITestCase, URLPatternsTestCase):
     def test_actualiza_un_provincia_return_details_ok(self):
         """Actualiza provincia"""
         urlList = reverse("provincia-list")
-        provincia = Provincia.objects.create(nombre="provincia_test_1")
+        provincia = Provincia.objects.first()
         url = reverse("provincia-detail", args=(provincia.id,))
         self.client.patch(
             url, {"nombre": "provincia_actualizado_test_2"}, format="json"

@@ -1,0 +1,12 @@
+- model: agenda.tratamiento
+  pk: 1
+  fields:
+    nombre: tratamiento_test_1
+- model: agenda.tratamiento
+  pk: 2
+  fields:
+    nombre: tratamiento_test_2
+- model: agenda.tratamiento
+  pk: 3
+  fields:
+    nombre: tratamiento_test_3

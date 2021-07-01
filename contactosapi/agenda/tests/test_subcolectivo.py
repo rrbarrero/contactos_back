@@ -8,9 +8,9 @@ from agenda.models import Colectivo, SubColectivo
 
 class SubcolectivosTestCase(APITestCase, URLPatternsTestCase):
     urlpatterns = [path("", include("contactosapi.urls"))]
+    fixtures = ["users.yaml", "colectivo.yaml", "subcolectivo.yaml"]
 
     def setUp(self):
-        self.user = User.objects.create_user(username="testuser", password="12345")
         self.client.login(username="testuser", password="12345")
 
     def test_lista_subcolectivos_return_http_ok(self):
@@ -25,42 +25,27 @@ class SubcolectivosTestCase(APITestCase, URLPatternsTestCase):
         url = reverse("subcolectivo-list")
         self.client.post(
             url,
-            {"nombre": "subcolectivo_test_1", "colectivo": colectivo.id},
+            {"nombre": "subcolectivo_test_4", "colectivo": colectivo.id},
             format="json",
         )
         self.client.post(
             url,
-            {"nombre": "subcolectivo_test_2", "colectivo": colectivo.id},
+            {"nombre": "subcolectivo_test_5", "colectivo": colectivo.id},
             format="json",
         )
         self.client.post(
             url,
-            {"nombre": "subcolectivo_test_3", "colectivo": colectivo.id},
+            {"nombre": "subcolectivo_test_6", "colectivo": colectivo.id},
             format="json",
         )
         response = self.client.get(url, format="json")
         response_data = json.loads(response.content)
-        self.assertEqual(response_data["count"], 3)
+        self.assertEqual(response_data["count"], 6)
 
     def test_elimina_subcolectivo_return_len_ok(self):
         """Elimina Colectivos"""
-        colectivo = Colectivo.objects.create(nombre="colectivo_testing_1")
+        colectivo = Colectivo.objects.first()
         urlList = reverse("subcolectivo-list")
-        self.client.post(
-            urlList,
-            {"nombre": "colectivo_test_1", "colectivo": colectivo.id},
-            format="json",
-        )
-        self.client.post(
-            urlList,
-            {"nombre": "colectivo_test_2", "colectivo": colectivo.id},
-            format="json",
-        )
-        self.client.post(
-            urlList,
-            {"nombre": "colectivo_test_3", "colectivo": colectivo.id},
-            format="json",
-        )
         subcolectivo = SubColectivo.objects.first()
         url = reverse("subcolectivo-detail", args=(subcolectivo.id,))
         self.client.delete(url)
@@ -70,10 +55,8 @@ class SubcolectivosTestCase(APITestCase, URLPatternsTestCase):
 
     def test_actualiza_un_subcolectivo_return_details_ok(self):
         """Actualiza SubColectivos"""
-        colectivo = Colectivo.objects.create(nombre="colectivo_test_1")
-        subcolectivo = SubColectivo.objects.create(
-            nombre="subcolectivo_test_1", colectivo=colectivo
-        )
+        colectivo = Colectivo.objects.first()
+        subcolectivo = SubColectivo.objects.first()
         url = reverse("subcolectivo-detail", args=(subcolectivo.id,))
         urlList = reverse("subcolectivo-list")
         self.client.patch(
