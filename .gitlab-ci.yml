@@ -3,6 +3,7 @@ image: python:3.8.10
 variables:
   MYSQL_DATABASE: $MYSQL_DB
   MYSQL_ROOT_PASSWORD: $MYSQL_PASS
+  TESTING: True
 
 services:
   - mysql:latest
