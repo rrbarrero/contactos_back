@@ -4,6 +4,7 @@ variables:
   MYSQL_DATABASE: $MYSQL_DB
   MYSQL_ROOT_PASSWORD: $MYSQL_PASS
   TESTING: "true"
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/pip-cache"
 
 stages:
   - linter
@@ -15,7 +16,8 @@ services:
 
 cache:
   paths:
-    - $CI_PROJECT_DIR/.cache/pip
+    - "$CI_PROJECT_DIR/pip-cache"
+  key: "$CI_PROJECT_ID"
 
 before_script:
   - apt-get update && apt-get -y install libsasl2-dev python-dev libldap2-dev libssl-dev
