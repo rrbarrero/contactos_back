@@ -6,8 +6,8 @@ variables:
   TESTING: "true"
 
 stages:
-  - test
   - linter
+  - test
 
 services:
   - name: mysql:8.0
@@ -29,9 +29,21 @@ test:
     - python
     - tests
 
-linter:
+flake8:
+  stage: linter
   script:
     - flake8 --max-line-length=120 contactosapi/*.py
   tags:
     - python
     - tests
+
+flake8:
+  stage: linter
+  allow_failure: true
+  script:
+    - pylint -d C0301 contactosapi/*.py
+  tags:
+    - python
+    - tests
+
+
