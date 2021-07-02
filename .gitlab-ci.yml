@@ -1,5 +1,8 @@
 image: python:3.8.10
 
+tags:
+  - runner-docker
+
 services:
   - mysql:latest
 

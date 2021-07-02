@@ -58,23 +58,8 @@ class SubColectivoList(generics.ListCreateAPIView):
 
 
 class ColectivoSubcolectivo(generics.ListAPIView):
+    queryset = SubColectivo.objects.all()
     serializer_class = SubColectivoSerializer
-
-    def get(self, request, pk):
-        self.pk = pk
-        qs = self.get_queryset()
-        serializer = SubColectivoSerializer(qs, many=True)
-        return Response(
-            {
-                "results": serializer.data,
-                "count": self.result_count,
-            }
-        )
-
-    def get_queryset(self):
-        queryset = Colectivo.objects.get(pk=self.pk).subcolectivos.all()
-        self.result_count = len(queryset)
-        return self.paginate_queryset(queryset)
 
 
 class SubColectivoDetail(generics.RetrieveUpdateDestroyAPIView):
