@@ -5,6 +5,10 @@ variables:
   MYSQL_ROOT_PASSWORD: $MYSQL_PASS
   TESTING: "true"
 
+stages:
+  - test
+  - linter
+
 services:
   - name: mysql:8.0
     command: ["--default-authentication-plugin=mysql_native_password"]
@@ -21,6 +25,13 @@ before_script:
 test:
   script:
     - cd contactosapi && python manage.py test
+  tags:
+    - python
+    - tests
+
+linter:
+  script:
+    - flake8 --max-line-length=120 contactosapi/*.py
   tags:
     - python
     - tests
