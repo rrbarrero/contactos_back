@@ -10,7 +10,6 @@ from rest_framework.response import Response
 
 from django.contrib.auth.models import User
 from django.http import Http404
-from django.db.models import Q
 
 from agenda.models import Colectivo
 from agenda.models import SubColectivo
@@ -152,14 +151,8 @@ class Buscar(generics.ListAPIView):
         queryset = self.get_queryset()
         termino1 = self.request.query_params.get("termino1")
         termino2 = self.request.query_params.get("termino2")
-        if termino1:
-            queryset = queryset.filter(
-                Q(nombre__icontains=termino1) | Q(apellidos__icontains=termino1)
-            )
-        if termino2:
-            queryset = queryset.filter(
-                Q(nombre__icontains=termino2) | Q(apellidos__icontains=termino2)
-            )
+        queryset = Persona.busca_persona(queryset, termino1, termino2)
+        queryset = Cargo.busca_cargo(queryset, termino1, termino2)
         serializer = PersonaSerializer(queryset, many=True)
         return Response(serializer.data)
 

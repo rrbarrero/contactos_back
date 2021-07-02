@@ -19,6 +19,7 @@ pygments = "*"
 django-cors-headers = "*"
 PyYAML = "^5.4.1"
 uritemplate = "^3.0.1"
+iteration-utilities = "^0.11.0"
 
 [tool.poetry.dev-dependencies]
 django-debug-toolbar = "*"

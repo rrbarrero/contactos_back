@@ -1,8 +1,12 @@
+from itertools import chain
+
 from django.conf import settings
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
+from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from iteration_utilities import unique_everseen
 from rest_framework.authtoken.models import Token
 
 
@@ -88,6 +92,23 @@ class Persona(models.Model):
             nombre=self.nombre, apellidos=self.apellidos
         )
 
+    @staticmethod
+    def busca_persona(queryset, termino1, termino2):
+        """Busca en nombre y apellidos por termino1 y termino2"""
+        if not termino1 and not termino2:
+            return queryset
+        result_1 = []
+        result_2 = []
+        if termino1:
+            result_1 = queryset.filter(
+                Q(nombre__icontains=termino1) | Q(apellidos__icontains=termino1)
+            )
+        if termino2:
+            result_2 = queryset.filter(
+                Q(nombre__icontains=termino2) | Q(apellidos__icontains=termino2)
+            )
+        return list(unique_everseen(chain(result_1, result_2)))
+
 
 class Cargo(models.Model):
     cargo = models.CharField(max_length=500, verbose_name="Cargo")
@@ -125,13 +146,26 @@ class Cargo(models.Model):
 
     def __str__(self):
         return "{}".format(self.empresa)
-        # return "{tratamiento} {apellidos}, {nombre} <{cargo}, {empresa}>".format(
-        #     nombre=self.persona,
-        #     apellidos=self.persona.apellidos,
-        #     cargo=self.cargo,
-        #     empresa=self.empresa,
-        #     tratamiento=self.persona.tratamiento,
-        # )
+
+    @staticmethod
+    def busca_cargo(queryset, termino1, termino2):
+        """Busca en cargos y devuelve Persona(s) con ese cargo"""
+        if not termino1 and not termino2:
+            return queryset
+        cargos = Cargo.objects.all()
+        result_1 = []
+        result_2 = []
+        if termino1:
+            search_term1 = cargos.filter(
+                Q(empresa__icontains=termino1) | Q(cargo__icontains=termino1)
+            )
+            result_1 = [cargo.persona for cargo in search_term1]
+        if termino2:
+            search_term2 = cargos.filter(
+                Q(empresa__icontains=termino2) | Q(cargo__icontains=termino2)
+            )
+            result_2 = [cargo.persona for cargo in search_term2]
+        return list(unique_everseen(chain(queryset, result_1, result_2)))
 
 
 class Telefono(models.Model):

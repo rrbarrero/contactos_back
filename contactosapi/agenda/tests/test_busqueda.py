@@ -32,3 +32,33 @@ class BusquedaTestCase(APITestCase, URLPatternsTestCase):
         )
         response_data = json.loads(response.content)
         self.assertEqual(len(response_data), 1)
+
+    def test_busca_por_cargo_y_empresa(self):
+        url = reverse("busca-contacto")
+        response = self.client.get(
+            url,
+            {"termino1": "cargo_test_2", "termino2": "empresa_test_2"},
+            format="json",
+        )
+        response_data = json.loads(response.content)
+        self.assertEqual(len(response_data), 1)
+
+    def test_busca_por_cargo_y_apellidos(self):
+        url = reverse("busca-contacto")
+        response = self.client.get(
+            url,
+            {"termino1": "cargo_test_1", "termino2": "apellidos_test_1"},
+            format="json",
+        )
+        response_data = json.loads(response.content)
+        self.assertEqual(len(response_data), 1)
+
+    def test_busca_por_nombre_y_apellidos_diferente_persona(self):
+        url = reverse("busca-contacto")
+        response = self.client.get(
+            url,
+            {"termino1": "nombre_test_3", "termino2": "apellidos_test_2"},
+            format="json",
+        )
+        response_data = json.loads(response.content)
+        self.assertEqual(len(response_data), 2)
