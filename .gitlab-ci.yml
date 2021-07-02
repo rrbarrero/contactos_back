@@ -43,7 +43,7 @@ flake8:
   stage: linter
   allow_failure: true
   script:
-    - pylint -d C0301 contactosapi/*.py
+    - pylint contactosapi/*.py
   tags:
     - python
     - tests
