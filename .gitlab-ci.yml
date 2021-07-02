@@ -11,7 +11,7 @@ services:
 
 cache:
   paths:
-    - ~/.cache/pip/
+    - $CI_PROJECT_DIR/.cache/pip
 
 before_script:
   - apt-get update && apt-get -y install libsasl2-dev python-dev libldap2-dev libssl-dev
