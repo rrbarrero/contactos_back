@@ -34,4 +34,5 @@ urlpatterns = [
     path("cargos/<int:pk>", views.CargoDetail.as_view(), name="cargo-detail"),
     path("telefonos/", views.TelefonoList.as_view()),
     path("correos/", views.CorreoList.as_view()),
+    path("buscar/", views.Buscar.as_view(), name="busca-contacto"),
 ]

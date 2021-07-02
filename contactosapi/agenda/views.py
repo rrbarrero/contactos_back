@@ -145,6 +145,25 @@ class CorreoDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CorreoSerializer
 
 
+class Buscar(generics.ListAPIView):
+    queryset = Persona.objects.all()
+
+    def list(self, request):
+        queryset = self.get_queryset()
+        termino1 = self.request.query_params.get("termino1")
+        termino2 = self.request.query_params.get("termino2")
+        if termino1:
+            queryset = queryset.filter(
+                Q(nombre__icontains=termino1) | Q(apellidos__icontains=termino1)
+            )
+        if termino2:
+            queryset = queryset.filter(
+                Q(nombre__icontains=termino2) | Q(apellidos__icontains=termino2)
+            )
+        serializer = PersonaSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
 class UserDetail(APIView):
     """Lista usuarios"""
 

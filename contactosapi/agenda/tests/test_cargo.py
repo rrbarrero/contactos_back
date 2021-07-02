@@ -132,10 +132,3 @@ class CargoTestCase(APITestCase, URLPatternsTestCase):
         response_data = json.loads(response.content)
         self.assertEqual(cargo.empresa, response.data["empresa"])
         self.assertEqual(cargo.cargo, response.data["cargo"])
-
-    # def test_busca_cargos_return_ok(self):
-    #     persona = Persona.objects.create(
-    #         nombre="nombre_test_1",
-    #         apellidos="apellidos_test_1",
-    #         tratamiento=tratamiento,
-    #     )
