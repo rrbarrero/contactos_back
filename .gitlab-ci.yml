@@ -6,7 +6,8 @@ variables:
   TESTING: "true"
 
 services:
-  - mysql:latest
+  - name: mysql:latest
+  - command: ["--default-authentication-plugin=mysql_native_password"]
 
 cache:
   paths:
