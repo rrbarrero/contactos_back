@@ -1,5 +1,4 @@
 import json
-from django.contrib.auth.models import User
 from django.urls import include, reverse, path
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory, URLPatternsTestCase
@@ -45,11 +44,11 @@ class SubcolectivosTestCase(APITestCase, URLPatternsTestCase):
     def test_elimina_subcolectivo_return_len_ok(self):
         """Elimina Colectivos"""
         colectivo = Colectivo.objects.first()
-        urlList = reverse("subcolectivo-list")
+        list_url = reverse("subcolectivo-list")
         subcolectivo = SubColectivo.objects.first()
         url = reverse("subcolectivo-detail", args=(subcolectivo.id,))
         self.client.delete(url)
-        response = self.client.get(urlList, format="json")
+        response = self.client.get(list_url, format="json")
         response_data = json.loads(response.content)
         self.assertEqual(response_data["count"], 2)
 
@@ -58,11 +57,11 @@ class SubcolectivosTestCase(APITestCase, URLPatternsTestCase):
         colectivo = Colectivo.objects.first()
         subcolectivo = SubColectivo.objects.first()
         url = reverse("subcolectivo-detail", args=(subcolectivo.id,))
-        urlList = reverse("subcolectivo-list")
+        list_url = reverse("subcolectivo-list")
         self.client.patch(
             url, {"nombre": "subcolectivo_actualizado_test_2"}, format="json"
         )
-        response = self.client.get(urlList, format="json")
+        response = self.client.get(list_url, format="json")
         response_data = json.loads(response.content)
         self.assertIn(
             response_data["results"][0]["nombre"], "subcolectivo_actualizado_test_2"

@@ -1,7 +1,6 @@
 import json
 
 from agenda.models import Provincia
-from django.contrib.auth.models import User
 from django.urls import include, path, reverse
 from rest_framework import status
 from rest_framework.test import APIRequestFactory, APITestCase, URLPatternsTestCase
@@ -44,23 +43,23 @@ class ProvinciaTestCase(APITestCase, URLPatternsTestCase):
 
     def test_elimina_provincia_return_len_ok(self):
         """Elimina provincia"""
-        urlList = reverse("provincia-list")
+        list_url = reverse("provincia-list")
         provincia = Provincia.objects.first()
         url = reverse("provincia-detail", args=(provincia.id,))
         self.client.delete(url)
-        response = self.client.get(urlList, format="json")
+        response = self.client.get(list_url, format="json")
         response_data = json.loads(response.content)
         self.assertEqual(response_data["count"], 2)
 
     def test_actualiza_un_provincia_return_details_ok(self):
         """Actualiza provincia"""
-        urlList = reverse("provincia-list")
+        list_url = reverse("provincia-list")
         provincia = Provincia.objects.first()
         url = reverse("provincia-detail", args=(provincia.id,))
         self.client.patch(
             url, {"nombre": "provincia_actualizado_test_2"}, format="json"
         )
-        response = self.client.get(urlList, format="json")
+        response = self.client.get(list_url, format="json")
         response_data = json.loads(response.content)
         self.assertIn(
             response_data["results"][0]["nombre"], "provincia_actualizado_test_2"

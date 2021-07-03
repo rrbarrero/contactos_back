@@ -32,7 +32,8 @@ urlpatterns = [
     path("personas/<int:pk>", views.PersonaDetail.as_view(), name="persona-detail"),
     path("cargos/", views.CargoList.as_view(), name="cargo-list"),
     path("cargos/<int:pk>", views.CargoDetail.as_view(), name="cargo-detail"),
-    path("telefonos/", views.TelefonoList.as_view()),
+    path("telefonos/", views.TelefonoList.as_view(), name="telefono-list"),
+    path("telefonos/<int:pk>", views.TelefonoDetail.as_view(), name="telefono-detail"),
     path("correos/", views.CorreoList.as_view()),
     path("buscar/", views.Buscar.as_view(), name="busca-contacto"),
 ]

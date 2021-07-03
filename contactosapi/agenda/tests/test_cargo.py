@@ -1,7 +1,6 @@
 import json
 
 from agenda.models import Cargo, Correo, Telefono
-from django.contrib.auth.models import User
 from django.urls import include, path, reverse
 from rest_framework import status
 from rest_framework.test import APIRequestFactory, APITestCase, URLPatternsTestCase
@@ -63,11 +62,11 @@ class CargoTestCase(APITestCase, URLPatternsTestCase):
 
     def test_elimina_cargo_return_len_ok(self):
         """Elimina cargo"""
-        urlList = reverse("cargo-list")
+        list_url = reverse("cargo-list")
         cargo = Cargo.objects.first()
         url = reverse("cargo-detail", args=(cargo.id,))
         self.client.delete(url)
-        response = self.client.get(urlList, format="json")
+        response = self.client.get(list_url, format="json")
         response_data = json.loads(response.content)
         self.assertEqual(response_data["count"], 2)
 
@@ -84,7 +83,7 @@ class CargoTestCase(APITestCase, URLPatternsTestCase):
             nota="nota_test correo",
         )
         url = reverse("cargo-detail", args=(cargo.id,))
-        urlList = reverse("cargo-list")
+        list_url = reverse("cargo-list")
         self.client.patch(
             url,
             {
@@ -97,7 +96,7 @@ class CargoTestCase(APITestCase, URLPatternsTestCase):
             },
             format="json",
         )
-        response = self.client.get(urlList, format="json")
+        response = self.client.get(list_url, format="json")
         to_exclude = ["fecha_cese", "fecha_alta", "fecha_modificacion"]
         cargo_data = json.loads(response.content)["results"][0]
         response_data = {k: v for k, v in cargo_data.items() if k not in to_exclude}
@@ -130,5 +129,14 @@ class CargoTestCase(APITestCase, URLPatternsTestCase):
         url = reverse("cargo-detail", args=(cargo.id,))
         response = self.client.get(url)
         response_data = json.loads(response.content)
-        self.assertEqual(cargo.empresa, response.data["empresa"])
-        self.assertEqual(cargo.cargo, response.data["cargo"])
+        self.assertEqual(cargo.empresa, response_data["empresa"])
+        self.assertEqual(cargo.cargo, response_data["cargo"])
+
+    def test_cargo_detail_not_equal(self):
+        cargo = Cargo.objects.get(pk=1)
+        cargo2 = Cargo.objects.get(pk=2)
+        url = reverse("cargo-detail", args=(cargo.id,))
+        response = self.client.get(url)
+        response_data = json.loads(response.content)
+        self.assertNotEqual(cargo2.empresa, response_data["empresa"])
+        self.assertNotEqual(cargo2.cargo, response_data["cargo"])

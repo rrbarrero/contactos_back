@@ -1,0 +1,42 @@
+- model: agenda.telefono
+  pk: 1
+  fields:
+    cargo: 1 
+    nombre: telefono_test_1
+    numero: "987654321" 
+    nota: notas_test_1
+- model: agenda.telefono
+  pk: 2
+  fields:
+    cargo: 2 
+    nombre: telefono_test_2
+    numero: "987654322" 
+    nota: notas_test_2
+- model: agenda.telefono
+  pk: 3
+  fields:
+    cargo: 3 
+    nombre: telefono_test_3
+    numero: "987654323" 
+    nota: notas_test_3
+- model: agenda.telefono
+  pk: 4
+  fields:
+    cargo: 3 
+    nombre: telefono_test_4
+    numero: "987654324" 
+    nota: notas_test_4
+- model: agenda.telefono
+  pk: 5
+  fields:
+    cargo: 3 
+    nombre: telefono_test_5
+    numero: "987654324" 
+    nota: notas_test_5
+- model: agenda.telefono
+  pk: 6
+  fields:
+    cargo: 2 
+    nombre: telefono_test_6
+    numero: "987654326" 
+    nota: notas_test_6
