@@ -156,3 +156,57 @@ class CargoTestCase(APITestCase, URLPatternsTestCase):
         response_data = json.loads(response.content)
         self.assertNotEqual(cargo2.empresa, response_data["empresa"])
         self.assertNotEqual(cargo2.cargo, response_data["cargo"])
+
+    def test_no_puede_haber_cargos_duplicados(self):
+        """no pueden existir dos cargos con la misma unique_key"""
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
+        url = reverse("cargo-list")
+        self.client.post(
+            url,
+            {
+                "persona": 1,
+                "cargo": "cargo_test_4",
+                "finalizado": False,
+                "ciudad": "ciudad_test_4",
+                "cod_postal": 10004,
+                "direccion": "direccion_test_4",
+                "provincia": 1,
+                "pais": 1,
+                "empresa": "empresa_test_4",
+                "fecha_alta": "2021-07-1T11:00:00+00:00",
+                "fecha_modificacion": "2021-07-1T11:00:00+00:00",
+                "colectivo": 1,
+                "subcolectivo": 1,
+                "usuario_modificacion": 1,
+                "notas": "notas test data 4",
+                "telefonos": [],
+                "correos": [],
+            },
+            format="json",
+        )
+        try:
+            response = self.client.post(
+                url,
+                {
+                    "persona": 1,
+                    "cargo": "cargo_test_4",
+                    "finalizado": False,
+                    "ciudad": "ciudad_test_4",
+                    "cod_postal": 10004,
+                    "direccion": "direccion_test_4",
+                    "provincia": 1,
+                    "pais": 1,
+                    "empresa": "empresa_test_4",
+                    "fecha_alta": "2021-07-1T11:00:00+00:00",
+                    "fecha_modificacion": "2021-07-1T11:00:00+00:00",
+                    "colectivo": 1,
+                    "subcolectivo": 1,
+                    "usuario_modificacion": 1,
+                    "notas": "notas test data 4",
+                    "telefonos": [],
+                    "correos": [],
+                },
+                format="json",
+            )
+        except IntegrityError as e:
+            self.assertIn("Duplicate entry", str(e))
