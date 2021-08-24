@@ -16,6 +16,7 @@
     subcolectivo: 1
     usuario_modificacion: 1
     notas: notas_test_1
+    unique_key: a
 - model: agenda.cargo
   pk: 2
   fields:
@@ -34,6 +35,7 @@
     subcolectivo: 2
     usuario_modificacion: 2
     notas: notas_test_2
+    unique_key: b
 - model: agenda.cargo
   pk: 3
   fields:
@@ -52,3 +54,4 @@
     subcolectivo: 3
     usuario_modificacion: 3
     notas: notas_test_3
+    unique_key: c

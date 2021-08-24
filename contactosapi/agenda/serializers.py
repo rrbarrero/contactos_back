@@ -1,5 +1,5 @@
 import datetime
-from django.contrib.auth.models import User
+from visago.models import CustomUser as User
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import Permission
 
@@ -79,7 +79,7 @@ class ProvinciaSerializer(serializers.ModelSerializer):
 class PersonaSerializer(serializers.HyperlinkedModelSerializer):
 
     cargos = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    tratamiento = TratamientoSerializer()
+    tratamiento = serializers.PrimaryKeyRelatedField(queryset=Tratamiento.objects.all())
 
     class Meta:
         model = Persona

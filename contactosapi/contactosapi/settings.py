@@ -12,21 +12,26 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 from pathlib import Path
-import ldap
-from django_auth_ldap.config import LDAPSearch, GroupOfNamesType, LDAPGroupQuery
+import environ
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+ENV_PATH = os.path.join(BASE_DIR, ".env")
+environ.Env.read_env(ENV_PATH)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "x1vs7cr-q+16q7^_h%%braq=vmx%e9qdnr84(65&3)+9fgqw9^"
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = []
 
@@ -40,9 +45,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_extensions",
     "rest_framework",
-    "rest_framework.authtoken",
     "corsheaders",
+    "visago",
     "agenda",
     "listas",
     "mail_templates",
@@ -87,9 +93,20 @@ WSGI_APPLICATION = "contactosapi.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-    }
+        "ENGINE": env("DATABASE_ENGINE"),
+        "NAME": env("DATABASE_NAME"),
+        "USER": env("DATABASE_USER"),
+        "PASSWORD": env("DATABASE_PASSWORD"),
+        "HOST": env("DATABASE_HOST"),
+        "PORT": env("DATABASE_PORT"),
+        "CHARSET": env("DATABASE_CHARSET"),
+        "COLLATION": env("DATABASE_COLLATION"),
+        "TEST": {
+            "NAME": "test_contactosapi",
+            "CHARSET": "utf8",
+            "COLLATION": "utf8_general_ci",
+        },
+    },
 }
 
 
@@ -132,66 +149,16 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = "public/static"
 
-
-# LDAP CONF
-# https://django-auth-ldap.readthedocs.io/en/latest/install.html
-
-AUTH_LDAP_SERVER_URI = "ldap://gobex.pri"
-AUTH_LDAP_CONNECTION_OPTIONS = {ldap.OPT_REFERRALS: 0}
-AUTH_LDAP_BIND_DN = (
-    "CN=devrepo,OU=CuentasGenericasCorreo,OU=02,OU=ORGANIZACION,DC=gobex,DC=pri"
-)
-AUTH_LDAP_BIND_PASSWORD = "ov3rWatch"
-AUTH_LDAP_USER_SEARCH = LDAPSearch(
-    "ou=ORGANIZACION,dc=gobex,dc=pri",
-    ldap.SCOPE_SUBTREE,
-    "(&(objectClass=person)(cn=%(user)s))",
-)
-# Set up the basic group parameters.
-AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
-    "ou=ORGANIZACION,dc=gobex,dc=pri", ldap.SCOPE_SUBTREE, "(objectClass=group)"
-)
-AUTH_LDAP_GROUP_TYPE = GroupOfNamesType(name_attr="cn")
-
-# Populate the Django user from the LDAP directory.
-AUTH_LDAP_USER_ATTR_MAP = {
-    "first_name": "givenName",
-    "last_name": "sn",
-    "email": "mail",
-}
-
-AUTH_LDAP_USER_FLAGS_BY_GROUP = {
-    "is_staff": LDAPGroupQuery(
-        "CN=GR020402Analisis_M, OU=GRUPOS, OU=020402, OU=0200, OU=02, OU=ORGANIZACION, DC=gobex, DC=pri"
-    )
-    | LDAPGroupQuery(
-        "CN=GRPresidencia, OU=Grupos, OU=INFRAESTRUCTURAS, DC=gobex, DC=pri"
-    ),
-    "is_superuser": "CN=GRPresidencia,OU=Grupos,OU=INFRAESTRUCTURAS,DC=gobex,DC=pri",
-}
-
-# Use LDAP group membership to calculate group permissions.
-AUTH_LDAP_FIND_GROUP_PERMS = True
-
-# Cache group memberships for an hour to minimize LDAP traffic
-AUTH_LDAP_CACHE_GROUPS = True
-AUTH_LDAP_GROUP_CACHE_TIMEOUT = 3600
-
-AUTHENTICATION_BACKENDS = [
-    "django_auth_ldap.backend.LDAPBackend",
-    "django.contrib.auth.backends.ModelBackend",
-]
-
-### end of ldap conf
+AUTH_USER_MODEL = "visago.CustomUser"
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.TokenAuthentication",
-    ],
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",
-        "rest_framework.permissions.DjangoModelPermissions",
-    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "visago.authentication.CustomAuthentication",  # custom authentication class
+    ),
+    # "DEFAULT_PERMISSION_CLASSES": [
+    #    # "rest_framework.permissions.IsAuthenticated",
+    #    # "rest_framework.permissions.DjangoModelPermissions",
+    # ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 15,
 }
@@ -199,3 +166,23 @@ REST_FRAMEWORK = {
 # new for django 3.2
 # https://dev.to/rubyflewtoo/upgrading-to-django-3-2-and-fixing-defaultautofield-warnings-518n
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost",
+    "http://localhost:3000",
+    "http://localhost:4200",
+]
+
+JWT_SECRET = env("JWT_SECRET")
+VISAGO_LOGIN_ENDPOINT = env("VISAGO_LOGIN_ENDPOINT")
+VISAGO_TOKEN_VALIDATION_ENDPOINT = env("VISAGO_TOKEN_VALIDATION_ENDPOINT")
+VISAGO_TOKEN_REFRESH_ENDPOINT = env("VISAGO_TOKEN_REFRESH_ENDPOINT")
+TESTING_VALID_AD_USERNAME = env("TESTING_VALID_AD_USERNAME")
+TESTING_VALID_AD_PASSWORD = env("TESTING_VALID_AD_PASSWORD")
+URL_SITE = env("URL_SITE")
+URL_API_PREFIX = env("URL_API_PREFIX")
+
+
+if env("environ") == "devel":
+    INSTALLED_APPS += ("debug_toolbar",)
+    MIDDLEWARE += ("debug_toolbar.middleware.DebugToolbarMiddleware",)

@@ -5,10 +5,7 @@ import sys
 
 
 def main():
-    settings_path = "contactosapi.settings.production"
-    if os.uname()[1] in ("pc01", "pc02", "mjrltp") or os.getenv("TESTING"):
-        settings_path = "contactosapi.settings.devel"
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", settings_path)
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "contactosapi.settings")
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

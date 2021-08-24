@@ -1,6 +1,8 @@
 import json
 
 from agenda.models import Cargo, Correo, Telefono
+from django.conf import settings
+from django.db.utils import IntegrityError
 from django.urls import include, path, reverse
 from rest_framework import status
 from rest_framework.test import APIRequestFactory, APITestCase, URLPatternsTestCase
@@ -19,19 +21,29 @@ class CargoTestCase(APITestCase, URLPatternsTestCase):
         "cargo.yaml",
     ]
 
-    # maxDiff = None
-
     def setUp(self):
-        self.client.login(username="testuser", password="12345")
+        url = reverse("auth-login")
+        response = self.client.post(
+            url,
+            {
+                "username": settings.TESTING_VALID_AD_USERNAME,
+                "password": settings.TESTING_VALID_AD_PASSWORD,
+            },
+            format="json",
+        )
+        data = json.loads(response.content)
+        self.token = data["token"]
 
     def test_lista_cargos_return_http_ok(self):
         """Listar cargos devuelve http 200"""
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         url = reverse("cargo-list")
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_cargo_return_len_ok(self):
         """Crear cargo"""
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         url = reverse("cargo-list")
         self.client.post(
             url,
@@ -62,6 +74,7 @@ class CargoTestCase(APITestCase, URLPatternsTestCase):
 
     def test_elimina_cargo_return_len_ok(self):
         """Elimina cargo"""
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         list_url = reverse("cargo-list")
         cargo = Cargo.objects.first()
         url = reverse("cargo-detail", args=(cargo.id,))
@@ -72,6 +85,7 @@ class CargoTestCase(APITestCase, URLPatternsTestCase):
 
     def test_actualiza_cargo_return_details_ok(self):
         """Actualiza cargo"""
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         cargo = Cargo.objects.get(pk=1)
         telefono = Telefono.objects.create(
             cargo=cargo, nombre="nombre_test_1", numero=927232321, nota="nota test 1"
@@ -125,6 +139,7 @@ class CargoTestCase(APITestCase, URLPatternsTestCase):
         self.assertDictEqual(response_data, desired_result)
 
     def test_cargo_detail(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         cargo = Cargo.objects.get(pk=1)
         url = reverse("cargo-detail", args=(cargo.id,))
         response = self.client.get(url)
@@ -133,6 +148,7 @@ class CargoTestCase(APITestCase, URLPatternsTestCase):
         self.assertEqual(cargo.cargo, response_data["cargo"])
 
     def test_cargo_detail_not_equal(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         cargo = Cargo.objects.get(pk=1)
         cargo2 = Cargo.objects.get(pk=2)
         url = reverse("cargo-detail", args=(cargo.id,))

@@ -1,7 +1,9 @@
 import json
 
+from visago.models import CustomUser as User
 from agenda.models import Persona, Tratamiento
-from django.contrib.auth.models import User
+from django.conf import settings
+from django.db.utils import IntegrityError
 from django.urls import include, path, reverse
 from rest_framework import status
 from rest_framework.test import APIRequestFactory, APITestCase, URLPatternsTestCase
@@ -21,9 +23,20 @@ class BusquedaTestCase(APITestCase, URLPatternsTestCase):
     ]
 
     def setUp(self):
-        self.client.login(username="testuser", password="12345")
+        url = reverse("auth-login")
+        response = self.client.post(
+            url,
+            {
+                "username": settings.TESTING_VALID_AD_USERNAME,
+                "password": settings.TESTING_VALID_AD_PASSWORD,
+            },
+            format="json",
+        )
+        data = json.loads(response.content)
+        self.token = data["token"]
 
     def test_busca_por_nombre_y_primer_apellido(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         url = reverse("busca-contacto")
         response = self.client.get(
             url,
@@ -34,6 +47,7 @@ class BusquedaTestCase(APITestCase, URLPatternsTestCase):
         self.assertEqual(len(response_data), 1)
 
     def test_busca_por_cargo_y_empresa(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         url = reverse("busca-contacto")
         response = self.client.get(
             url,
@@ -44,6 +58,7 @@ class BusquedaTestCase(APITestCase, URLPatternsTestCase):
         self.assertEqual(len(response_data), 1)
 
     def test_busca_por_cargo_y_apellidos(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         url = reverse("busca-contacto")
         response = self.client.get(
             url,
@@ -54,6 +69,7 @@ class BusquedaTestCase(APITestCase, URLPatternsTestCase):
         self.assertEqual(len(response_data), 1)
 
     def test_busca_por_nombre_y_apellidos_diferente_persona(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         url = reverse("busca-contacto")
         response = self.client.get(
             url,

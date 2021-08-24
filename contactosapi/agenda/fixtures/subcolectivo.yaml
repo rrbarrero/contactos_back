@@ -2,14 +2,17 @@
   pk: 1
   fields:
     nombre: subcolectivo_test_1
+    unique_key: a
     colectivo: 1
 - model: agenda.subcolectivo
   pk: 2
   fields:
     nombre: subcolectivo_test_2
+    unique_key: b
     colectivo: 2
 - model: agenda.subcolectivo
   pk: 3
   fields:
     nombre: subcolectivo_test_3
+    unique_key: c
     colectivo: 3

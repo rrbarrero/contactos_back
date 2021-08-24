@@ -1,12 +1,20 @@
 from itertools import chain
+import hashlib
 
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
-from django.db.models.signals import post_save
+
+# from django.db.models.signals import post_save
 from django.dispatch import receiver
 from iteration_utilities import unique_everseen
-from rest_framework.authtoken.models import Token
+
+# from rest_framework.authtoken.models import Token
+
+
+def md5Hash(keyStr):
+    data = (keyStr).encode("utf8")
+    return hashlib.md5(data).hexdigest()
 
 
 class Colectivo(models.Model):
@@ -26,15 +34,22 @@ class SubColectivo(models.Model):
     colectivo = models.ForeignKey(
         Colectivo, on_delete=models.CASCADE, related_name="subcolectivos"
     )
+    unique_key = models.CharField(
+        max_length=255, verbose_name="Unique key", unique=True
+    )
 
     class Meta:
         db_table = "subcolectivos"
         verbose_name_plural = "SubColectivos"
-        unique_together = ("nombre", "colectivo")
+        # unique_together = ("nombre", "colectivo")
         ordering = ["id"]
 
     def __str__(self):
         return "{}".format(self.nombre)
+
+    def save(self, *args, **kwargs):
+        self.unique_key = md5Hash(self.nombre + self.colectivo.nombre)
+        super(SubColectivo, self).save(*args, **kwargs)
 
 
 class Pais(models.Model):
@@ -79,17 +94,24 @@ class Persona(models.Model):
     tratamiento = models.ForeignKey(
         Tratamiento, blank=True, null=True, on_delete=models.SET_NULL
     )
+    unique_key = models.CharField(
+        max_length=255, verbose_name="Unique key", unique=True
+    )
 
     class Meta:
         db_table = "personas"
         verbose_name_plural = "Personas"
-        unique_together = ("nombre", "apellidos")
+        # unique_together = ("nombre", "apellidos")
         ordering = ["apellidos", "nombre"]
 
     def __str__(self):
         return "{apellidos}, {nombre}".format(
             nombre=self.nombre, apellidos=self.apellidos
         )
+
+    def save(self, *args, **kwargs):
+        self.unique_key = md5Hash(self.nombre + self.apellidos)
+        super(Persona, self).save(*args, **kwargs)
 
     @staticmethod
     def busca_persona(queryset, termino1, termino2):
@@ -136,15 +158,24 @@ class Cargo(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT
     )
     notas = models.TextField(blank=True)
+    unique_key = models.CharField(
+        max_length=255, verbose_name="Unique key", unique=True
+    )
 
     class Meta:
         db_table = "cargos"
         verbose_name_plural = "Cargos"
-        unique_together = ("cargo", "persona", "empresa")
+        # unique_together = ("cargo", "persona", "empresa")
         ordering = ["-fecha_alta"]
 
     def __str__(self):
         return "{}".format(self.empresa)
+
+    def save(self, *args, **kwargs):
+        self.unique_key = md5Hash(
+            self.cargo + self.persona.nombre + self.persona.apellidos + self.empresa
+        )
+        super(Cargo, self).save(*args, **kwargs)
 
     @staticmethod
     def busca_cargo(queryset, termino1, termino2):
@@ -218,7 +249,7 @@ class OtroContacto(models.Model):
         ordering = ["nombre"]
 
 
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_auth_token(sender, instance=None, created=False, **kwargs):
-    if created:
-        Token.objects.create(user=instance)
+# @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+# def create_auth_token(sender, instance=None, created=False, **kwargs):
+#     if created:
+#         Token.objects.create(user=instance)

@@ -1,7 +1,9 @@
 import json
-from django.urls import include, reverse, path
+from django.conf import settings
+from django.db.utils import IntegrityError
+from django.urls import include, path, reverse
 from rest_framework import status
-from rest_framework.test import APITestCase, APIRequestFactory, URLPatternsTestCase
+from rest_framework.test import APIRequestFactory, APITestCase, URLPatternsTestCase
 from agenda.models import Telefono
 
 
@@ -20,16 +22,28 @@ class TelefonoTestCase(APITestCase, URLPatternsTestCase):
     ]
 
     def setUp(self):
-        self.client.login(username="testuser", password="12345")
+        url = reverse("auth-login")
+        response = self.client.post(
+            url,
+            {
+                "username": settings.TESTING_VALID_AD_USERNAME,
+                "password": settings.TESTING_VALID_AD_PASSWORD,
+            },
+            format="json",
+        )
+        data = json.loads(response.content)
+        self.token = data["token"]
 
     def test_lista_telefonos_return_http_ok(self):
         """Listar telefonos devuelve http 200"""
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         url = reverse("telefono-list")
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_telefono_return_len_ok(self):
         """Crear telefono"""
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         url = reverse("telefono-list")
         self.client.post(
             url,
@@ -57,6 +71,7 @@ class TelefonoTestCase(APITestCase, URLPatternsTestCase):
 
     def test_elimina_telefono_return_len_ok(self):
         """Elimina telefono"""
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         list_url = reverse("telefono-list")
         telefono = Telefono.objects.first()
         url = reverse("telefono-detail", args=(telefono.id,))
@@ -67,6 +82,7 @@ class TelefonoTestCase(APITestCase, URLPatternsTestCase):
 
     def test_actualiza_un_telefono_return_details_ok(self):
         """Actualiza telefono"""
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         list_url = reverse("telefono-list")
         telefono = Telefono.objects.first()
         url = reverse("telefono-detail", args=(telefono.id,))

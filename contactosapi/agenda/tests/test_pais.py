@@ -1,4 +1,5 @@
 import json
+from django.conf import settings
 from django.urls import include, reverse, path
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory, URLPatternsTestCase
@@ -10,16 +11,28 @@ class PaisTestCase(APITestCase, URLPatternsTestCase):
     fixtures = ["users.yaml", "pais.yaml"]
 
     def setUp(self):
-        self.client.login(username="testuser", password="12345")
+        url = reverse("auth-login")
+        response = self.client.post(
+            url,
+            {
+                "username": settings.TESTING_VALID_AD_USERNAME,
+                "password": settings.TESTING_VALID_AD_PASSWORD,
+            },
+            format="json",
+        )
+        data = json.loads(response.content)
+        self.token = data["token"]
 
     def test_lista_paises_return_http_ok(self):
         """Listar paises devuelve http 200"""
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         url = reverse("pais-list")
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_pais_return_len_ok(self):
         """Crear país"""
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         url = reverse("pais-list")
         self.client.post(
             url,
@@ -42,6 +55,7 @@ class PaisTestCase(APITestCase, URLPatternsTestCase):
 
     def test_elimina_pais_return_len_ok(self):
         """Elimina país"""
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         list_url = reverse("pais-list")
         pais = Pais.objects.first()
         url = reverse("pais-detail", args=(pais.id,))
@@ -52,6 +66,7 @@ class PaisTestCase(APITestCase, URLPatternsTestCase):
 
     def test_actualiza_un_pais_return_details_ok(self):
         """Actualiza país"""
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         list_url = reverse("pais-list")
         pais = Pais.objects.first()
         url = reverse("pais-detail", args=(pais.id,))

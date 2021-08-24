@@ -1,26 +1,38 @@
 import json
-
-from agenda.models import Provincia
-from django.urls import include, path, reverse
+from django.conf import settings
+from django.urls import include, reverse, path
 from rest_framework import status
-from rest_framework.test import APIRequestFactory, APITestCase, URLPatternsTestCase
+from rest_framework.test import APITestCase, APIRequestFactory, URLPatternsTestCase
+from agenda.models import Provincia
 
 
 class ProvinciaTestCase(APITestCase, URLPatternsTestCase):
     urlpatterns = [path("", include("contactosapi.urls"))]
-    fixtures = ["users.yaml", "provincia.yaml"]
+    fixtures = ["provincia.yaml"]
 
     def setUp(self):
-        self.client.login(username="testuser", password="12345")
+        url = reverse("auth-login")
+        response = self.client.post(
+            url,
+            {
+                "username": settings.TESTING_VALID_AD_USERNAME,
+                "password": settings.TESTING_VALID_AD_PASSWORD,
+            },
+            format="json",
+        )
+        data = json.loads(response.content)
+        self.token = data["token"]
 
     def test_lista_provincias_return_http_ok(self):
         """Listar provincias devuelve http 200"""
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         url = reverse("provincia-list")
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_provincia_return_len_ok(self):
         """Crear provincia"""
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         url = reverse("provincia-list")
         self.client.post(
             url,
@@ -43,6 +55,7 @@ class ProvinciaTestCase(APITestCase, URLPatternsTestCase):
 
     def test_elimina_provincia_return_len_ok(self):
         """Elimina provincia"""
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         list_url = reverse("provincia-list")
         provincia = Provincia.objects.first()
         url = reverse("provincia-detail", args=(provincia.id,))
@@ -53,6 +66,7 @@ class ProvinciaTestCase(APITestCase, URLPatternsTestCase):
 
     def test_actualiza_un_provincia_return_details_ok(self):
         """Actualiza provincia"""
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
         list_url = reverse("provincia-list")
         provincia = Provincia.objects.first()
         url = reverse("provincia-detail", args=(provincia.id,))

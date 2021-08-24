@@ -22,13 +22,13 @@ from rest_framework.authtoken import views
 from rest_framework.schemas import get_schema_view
 from rest_framework.permissions import AllowAny
 
+
 urlpatterns = [
     path("admin/", admin.site.urls),
-    url(r"^api-auth/", include("rest_framework.urls", namespace="rest_framework")),
-    url(r"api/v1/api-token-auth/", views.obtain_auth_token, name="user-login"),
-    re_path(r"api/v1/", include("agenda.urls")),
-    re_path(r"api/v1/", include("listas.urls")),
-    re_path(r"api/v1/", include("mail_templates.urls")),
+    path(settings.URL_API_PREFIX, include("visago.urls")),
+    path(settings.URL_API_PREFIX, include("agenda.urls")),
+    path(settings.URL_API_PREFIX, include("listas.urls")),
+    path(settings.URL_API_PREFIX, include("mail_templates.urls")),
     path(
         "openapi/",
         get_schema_view(

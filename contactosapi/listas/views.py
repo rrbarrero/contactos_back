@@ -6,7 +6,6 @@ from rest_framework import viewsets
 from rest_framework import generics, serializers, status
 
 from agenda.serializers import CargoSerializer
-from contactosapi.settings.base import REST_FRAMEWORK
 
 from .serializers import ListaSerializer
 from .models import Lista

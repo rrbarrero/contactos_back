@@ -1,5 +1,6 @@
 import json
-from django.contrib.auth.models import User
+from django.conf import settings
+from visago.models import CustomUser as User
 from rest_framework.authtoken.models import Token
 from django.urls import include, reverse, path
 from rest_framework import status
@@ -8,28 +9,45 @@ from rest_framework.test import APITestCase, APIRequestFactory, URLPatternsTestC
 
 class UserTestCase(APITestCase, URLPatternsTestCase):
     urlpatterns = [path("", include("contactosapi.urls"))]
-    fixtures = ["users.yaml"]
+    # fixtures = ["users.yaml"]
 
-    def setUp(self):
-        self.user = User.objects.get(pk=1)
+    # def setUp(self):
+    #     self.user = User.objects.get(pk=1)
 
-    def test_usuario_puede_logarse_y_obtener_token(self):
-        url = reverse("user-login")
-        token = Token.objects.get(user=self.user)
+    def test_usuario_invalido_no_puede_logarse(self):
+        url = reverse("auth-login")
         response = self.client.post(
             url, {"username": "testuser", "password": "12345"}, format="json"
         )
         data = json.loads(response.content)
-        self.assertEqual(data["token"], token.key)
+        self.assertEqual(data["detail"], "Invalid login")
+
+    def test_usuario_valido_puede_logarse_y_obtener_un_token(self):
+        url = reverse("auth-login")
+        response = self.client.post(
+            url,
+            {
+                "username": settings.TESTING_VALID_AD_USERNAME,
+                "password": settings.TESTING_VALID_AD_PASSWORD,
+            },
+            format="json",
+        )
+        data = json.loads(response.content)
+        self.assertEqual(data["response"], "login_success")
 
     def test_usuario_puede_usar_su_token(self):
-        url = reverse("user-login")
+        url = reverse("auth-login")
         response = self.client.post(
-            url, {"username": "testuser", "password": "12345"}, format="json"
+            url,
+            {
+                "username": settings.TESTING_VALID_AD_USERNAME,
+                "password": settings.TESTING_VALID_AD_PASSWORD,
+            },
+            format="json",
         )
         data = json.loads(response.content)
         token = data["token"]
-        self.client.credentials(HTTP_AUTHORIZATION="Token " + token)
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + token)
         response = self.client.get(reverse("colectivo-list"))
         self.assertEqual(response.status_code, 200)
 
