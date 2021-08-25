@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "rest_framework",
     "corsheaders",
+    "django_filters",
     "visago",
     "agenda",
     "listas",
