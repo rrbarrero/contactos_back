@@ -67,7 +67,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "contactosapi.urls"
 
-templates_path = os.path.join(Path(BASE_DIR).parent.absolute(), "templates")
+templates_path = os.path.join(Path(BASE_DIR).absolute(), "templates")
 
 TEMPLATES = [
     {
@@ -154,11 +154,12 @@ AUTH_USER_MODEL = "visago.CustomUser"
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "visago.authentication.CustomAuthentication",  # custom authentication class
+        # "rest_framework.authentication.SessionAuthentication",
     ),
-    # "DEFAULT_PERMISSION_CLASSES": [
-    #    # "rest_framework.permissions.IsAuthenticated",
-    #    # "rest_framework.permissions.DjangoModelPermissions",
-    # ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        # "rest_framework.permissions.IsAuthenticated",
+        # "rest_framework.permissions.DjangoModelPermissions",
+    ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 15,
 }

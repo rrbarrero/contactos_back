@@ -21,6 +21,7 @@ from django.views.generic import TemplateView
 from rest_framework.authtoken import views
 from rest_framework.schemas import get_schema_view
 from rest_framework.permissions import AllowAny
+from rest_framework.authentication import SessionAuthentication
 
 
 urlpatterns = [
@@ -34,6 +35,9 @@ urlpatterns = [
         get_schema_view(
             title="Contactos backend",
             description="API Backend para la aplicación de Contactos",
+            public=True,
+            permission_classes=(AllowAny,),
+            authentication_classes=(SessionAuthentication,),
         ),
         name="openapi-schema",
     ),

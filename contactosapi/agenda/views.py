@@ -146,6 +146,7 @@ class CorreoDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class Buscar(generics.ListAPIView):
     queryset = Persona.objects.all()
+    serializer_class = PersonaSerializer
 
     def list(self, request):
         queryset = self.get_queryset()
