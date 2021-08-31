@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from django_filters import rest_framework as filters
+from agenda.filters import CargoFilter
 
 from django.contrib.auth.models import User
 from django.http import Http404
@@ -111,8 +112,14 @@ class PersonaDetail(generics.RetrieveUpdateDestroyAPIView):
 class CargoList(generics.ListCreateAPIView):
     queryset = Cargo.objects.all()
     serializer_class = CargoSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ("cargo", "colectivo", "subcolectivo")
+    # filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = CargoFilter
+
+    def get_queryset(self):
+        colectivos_filter_ids = self.request.GET.getlist("colectivos[]")
+        if colectivos_filter_ids:
+            return Cargo.objects.filter(colectivo__in=colectivos_filter_ids)
+        return Cargo.objects.all()
 
     def post(self, request):
         data = request.data.copy()

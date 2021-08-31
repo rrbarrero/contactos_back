@@ -41,6 +41,21 @@ class CargoTestCase(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_lista_cargos_filtrando_por_colectivo(self):
+        """Devuelve los cargos que pertenecen a un determinado colectivo"""
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
+        url = reverse("cargo-list")
+        payload = {
+            "colectivos[]": [
+                3,
+                2,
+            ],
+        }
+        response = self.client.get(url, payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_data = json.loads(response.content)
+        self.assertEqual(response_data["count"], 2)
+
     def test_create_cargo_return_len_ok(self):
         """Crear cargo"""
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
