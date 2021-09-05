@@ -63,6 +63,9 @@ class ColectivoSubcolectivo(generics.ListAPIView):
     queryset = SubColectivo.objects.all()
     serializer_class = SubColectivoSerializer
 
+    def get_queryset(self):
+        colectivo_id = self.kwargs['pk']
+        return SubColectivo.objects.filter(colectivo=colectivo_id)
 
 class SubColectivoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = SubColectivo.objects.all()
