@@ -100,7 +100,8 @@ class CorreoSerializer(serializers.ModelSerializer):
 
 class CargoSerializer(serializers.HyperlinkedModelSerializer):
 
-    persona = serializers.PrimaryKeyRelatedField(queryset=Persona.objects.all())
+    # persona = serializers.PrimaryKeyRelatedField(queryset=Persona.objects.all())
+    persona = PersonaSerializer()
     provincia = serializers.PrimaryKeyRelatedField(queryset=Provincia.objects.all())
     pais = serializers.PrimaryKeyRelatedField(queryset=Pais.objects.all())
     colectivo = serializers.PrimaryKeyRelatedField(queryset=Colectivo.objects.all())
@@ -110,12 +111,8 @@ class CargoSerializer(serializers.HyperlinkedModelSerializer):
     usuario_modificacion = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all()
     )
-    telefonos = serializers.PrimaryKeyRelatedField(
-        queryset=Telefono.objects.all(), many=True
-    )
-    correos = serializers.PrimaryKeyRelatedField(
-        queryset=Correo.objects.all(), many=True
-    )
+    telefonos = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    correos = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Cargo
@@ -140,3 +137,9 @@ class CargoSerializer(serializers.HyperlinkedModelSerializer):
             "telefonos",
             "correos",
         ]
+
+    def create(self, validated_data):
+        persona = Persona(**validated_data["persona"])
+        persona.save()
+        validated_data["persona"] = persona
+        return Cargo.objects.create(**validated_data)

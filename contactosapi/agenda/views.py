@@ -64,8 +64,9 @@ class ColectivoSubcolectivo(generics.ListAPIView):
     serializer_class = SubColectivoSerializer
 
     def get_queryset(self):
-        colectivo_id = self.kwargs['pk']
+        colectivo_id = self.kwargs["pk"]
         return SubColectivo.objects.filter(colectivo=colectivo_id)
+
 
 class SubColectivoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = SubColectivo.objects.all()
@@ -126,11 +127,18 @@ class CargoList(generics.ListCreateAPIView):
 
     def post(self, request):
         data = request.data.copy()
-        data["usuario_modifacion"] = request.user.id
-        serializer = CargoSerializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        data["usuario_modificacion"] = request.user.id
+        data["persona"]["tratamiento"] = data["persona"]["tratamiento"]["id"]
+        data["provincia"] = data["provincia"]["id"]
+        data["pais"] = data["pais"]["id"]
+        data["colectivo"] = data["colectivo"]["id"]
+        data["subcolectivo"] = data["subcolectivo"]["id"]
+        cargoSerializer = CargoSerializer(data=data)
+        telefonos = data.pop("telefonos", None)
+        correos = data.pop("correos", None)
+        cargoSerializer.is_valid(raise_exception=True)
+        cargo = cargoSerializer.save()
+        return Response(cargoSerializer.data, status=status.HTTP_201_CREATED)
 
 
 class CargoDetail(generics.RetrieveUpdateDestroyAPIView):

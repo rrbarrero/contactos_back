@@ -97,6 +97,8 @@ class Persona(models.Model):
     unique_key = models.CharField(
         max_length=255, verbose_name="Unique key", unique=True
     )
+    fecha_alta = models.DateTimeField(auto_now_add=True)
+    fecha_modificacion = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = "personas"

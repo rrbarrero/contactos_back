@@ -1,40 +1,55 @@
 from django.contrib import admin
 from .models import *
 
+
 class TratamientoAdmin(admin.ModelAdmin):
     pass
+
 
 class ProvinciaAdmin(admin.ModelAdmin):
     pass
 
+
 class PaisAdmin(admin.ModelAdmin):
     pass
+
 
 class ColectivoAdmin(admin.ModelAdmin):
     pass
 
+
 class SubColectivoAdmin(admin.ModelAdmin):
     pass
 
+
 class PersonaAdmin(admin.ModelAdmin):
 
-    search_fields = ['nombre', 'apellidos']
-    ordering = ('-id',)
+    list_display = ["nombre", "apellidos", "fecha_alta"]
+    search_fields = ["nombre", "apellidos"]
+    ordering = ("-fecha_alta",)
 
 
 class CargoAdmin(admin.ModelAdmin):
 
-    list_display = ('persona', 'cargo', 'empresa', 'finalizado', 'fecha_alta')
-    search_fields = ['cargo', 'empresa', 'persona__nombre', 'persona__apellidos']
-    ordering = ('-fecha_alta',)
+    list_display = ("persona", "cargo", "empresa", "finalizado", "fecha_alta")
+    search_fields = ["cargo", "empresa", "persona__nombre", "persona__apellidos"]
+    ordering = ("-fecha_alta",)
 
 
 class TelefonoAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'cargo', 'numero')
-    search_fields = ['nombre', 'cargo__empresa', 'cargo__persona__nombre', 'cargo__persona__apellidos', 'cargo__cargo']
+    list_display = ("nombre", "cargo", "numero")
+    search_fields = [
+        "nombre",
+        "cargo__empresa",
+        "cargo__persona__nombre",
+        "cargo__persona__apellidos",
+        "cargo__cargo",
+    ]
+
 
 class CorreoAdmin(admin.ModelAdmin):
     pass
+
 
 admin.site.register(Tratamiento, TratamientoAdmin)
 admin.site.register(Provincia, ProvinciaAdmin)
