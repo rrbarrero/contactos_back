@@ -102,8 +102,8 @@ class CorreoSerializer(serializers.ModelSerializer):
         fields = ["id", "cargo", "nombre", "email", "nota"]
 
 
-class CargoSerializer(serializers.HyperlinkedModelSerializer):
-
+class CargoSerializerWrite(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
     persona = serializers.PrimaryKeyRelatedField(queryset=Persona.objects.all())
     provincia = serializers.PrimaryKeyRelatedField(queryset=Provincia.objects.all())
     pais = serializers.PrimaryKeyRelatedField(queryset=Pais.objects.all())
@@ -119,24 +119,27 @@ class CargoSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Cargo
-        fields = [
-            "id",
-            "cargo",
-            "persona",
-            "finalizado",
-            "ciudad",
-            "cod_postal",
-            "direccion",
-            "provincia",
-            "pais",
-            "empresa",
-            "fecha_cese",
-            "fecha_alta",
-            "fecha_modificacion",
-            "colectivo",
-            "subcolectivo",
-            "usuario_modificacion",
-            "notas",
-            "telefonos",
-            "correos",
+        fields = "__all__"
+        read_only_fields = [
+            "unique_key",
         ]
+
+
+class CargoSerializerRead(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+    persona = PersonaSerializer(read_only=True)
+    provincia = serializers.PrimaryKeyRelatedField(queryset=Provincia.objects.all())
+    pais = serializers.PrimaryKeyRelatedField(queryset=Pais.objects.all())
+    colectivo = serializers.PrimaryKeyRelatedField(queryset=Colectivo.objects.all())
+    subcolectivo = serializers.PrimaryKeyRelatedField(
+        queryset=SubColectivo.objects.all()
+    )
+    usuario_modificacion = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all()
+    )
+    telefonos = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    correos = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
+    class Meta:
+        model = Cargo
+        fields = "__all__"

@@ -30,7 +30,7 @@ from agenda.serializers import PaisSerializer
 from agenda.serializers import TratamientoSerializer
 from agenda.serializers import ProvinciaSerializer
 from agenda.serializers import PersonaSerializer
-from agenda.serializers import CargoSerializer
+from agenda.serializers import CargoSerializerRead, CargoSerializerWrite
 from agenda.serializers import TelefonoSerializer
 from agenda.serializers import CorreoSerializer
 from agenda.serializers import UserSerializer
@@ -115,7 +115,7 @@ class PersonaDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class CargoList(generics.ListCreateAPIView):
     queryset = Cargo.objects.all()
-    serializer_class = CargoSerializer
+    serializer_class = CargoSerializerRead
     # filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = CargoFilter
 
@@ -128,7 +128,7 @@ class CargoList(generics.ListCreateAPIView):
     def post(self, request):
         data = request.data.copy()
         data["usuario_modificacion"] = request.user.id
-        cargoSerializer = CargoSerializer(data=data)
+        cargoSerializer = CargoSerializerWrite(data=data)
         cargoSerializer.is_valid(raise_exception=True)
         cargo = cargoSerializer.save()
         return Response(cargoSerializer.data, status=status.HTTP_201_CREATED)
@@ -136,7 +136,7 @@ class CargoList(generics.ListCreateAPIView):
 
 class CargoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Cargo.objects.all()
-    serializer_class = CargoSerializer
+    serializer_class = CargoSerializerWrite
 
 
 class TelefonoList(generics.ListCreateAPIView):

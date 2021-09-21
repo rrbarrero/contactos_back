@@ -5,7 +5,7 @@ from rest_framework import filters
 from rest_framework import viewsets
 from rest_framework import generics, serializers, status
 
-from agenda.serializers import CargoSerializer
+from agenda.serializers import CargoSerializerRead
 
 from .serializers import ListaSerializer
 from .models import Lista
@@ -45,12 +45,12 @@ class ListaDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ListaCargos(generics.ListAPIView):
-    serializer_class = CargoSerializer
+    serializer_class = CargoSerializerRead
 
     def get(self, request, pk):
         self.pk = pk
         qs = self.get_queryset()
-        serializer = CargoSerializer(qs, many=True)
+        serializer = CargoSerializerRead(qs, many=True)
         return Response(
             {
                 "results": serializer.data,
