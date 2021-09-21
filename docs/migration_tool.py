@@ -31,10 +31,10 @@ def reset_tables():
     Cargo.objects.all().delete()
     SubColectivo.objects.all().delete()
     Colectivo.objects.all().delete()
-    # Persona.objects.all().delete()
-    # Pais.objects.all().delete()
-    # Provincia.objects.all().delete()
-    # Tratamiento.objects.all().delete()
+    Persona.objects.all().delete()
+    Pais.objects.all().delete()
+    Provincia.objects.all().delete()
+    Tratamiento.objects.all().delete()
     Correo.objects.all().delete()
 
 
@@ -306,11 +306,11 @@ def correos():
 
 
 if __name__ == "__main__":
-    reset_tables()
-    # tratamientos()
-    # provincias()
-    # paises()
-    # personas()
+    # reset_tables()
+    tratamientos()
+    provincias()
+    paises()
+    personas()
     colectivos()
     subcolectivos()
     cargos()

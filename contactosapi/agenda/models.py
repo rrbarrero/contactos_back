@@ -104,7 +104,7 @@ class Persona(models.Model):
         db_table = "personas"
         verbose_name_plural = "Personas"
         # unique_together = ("nombre", "apellidos")
-        ordering = ["apellidos", "nombre"]
+        ordering = ["-fecha_alta"]
 
     def __str__(self):
         return "{apellidos}, {nombre}".format(

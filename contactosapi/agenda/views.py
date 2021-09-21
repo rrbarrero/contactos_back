@@ -128,14 +128,7 @@ class CargoList(generics.ListCreateAPIView):
     def post(self, request):
         data = request.data.copy()
         data["usuario_modificacion"] = request.user.id
-        data["persona"]["tratamiento"] = data["persona"]["tratamiento"]["id"]
-        data["provincia"] = data["provincia"]["id"]
-        data["pais"] = data["pais"]["id"]
-        data["colectivo"] = data["colectivo"]["id"]
-        data["subcolectivo"] = data["subcolectivo"]["id"]
         cargoSerializer = CargoSerializer(data=data)
-        telefonos = data.pop("telefonos", None)
-        correos = data.pop("correos", None)
         cargoSerializer.is_valid(raise_exception=True)
         cargo = cargoSerializer.save()
         return Response(cargoSerializer.data, status=status.HTTP_201_CREATED)
