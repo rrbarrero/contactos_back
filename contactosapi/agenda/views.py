@@ -128,10 +128,13 @@ class CargoList(generics.ListCreateAPIView):
     def post(self, request):
         data = request.data.copy()
         data["usuario_modificacion"] = request.user.id
-        cargoSerializer = CargoSerializerWrite(data=data)
+        cargoSerializer = CargoSerializerWrite(data=data, context={"request": request})
         cargoSerializer.is_valid(raise_exception=True)
         cargo = cargoSerializer.save()
-        return Response(cargoSerializer.data, status=status.HTTP_201_CREATED)
+        return Response(
+            cargoSerializer.data,
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class CargoDetail(generics.RetrieveUpdateDestroyAPIView):
