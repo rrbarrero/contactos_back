@@ -139,7 +139,7 @@ class CargoList(generics.ListCreateAPIView):
 
 class CargoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Cargo.objects.all()
-    serializer_class = CargoSerializerWrite
+    serializer_class = CargoSerializerRead
 
 
 class TelefonoList(generics.ListCreateAPIView):
